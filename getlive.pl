@@ -6,6 +6,7 @@ use strict;
 use warnings;
 use utf8;
 
+use POSIX;
 use Data::Dumper;
 use XML::LibXML::Reader;
 use XML::Writer;
@@ -16,103 +17,83 @@ use LWP::Simple;
 use JSON;
 
 my $fileprefix = 'podcasts/';
-
-sub getdate {
-
-    my ($sec,$min,$hour,$mday,$mon,$year,$wday,$ydat,$isdst)=localtime();
-    my $jahr=$year;
-    my $monat=$mon+1;
-    my $tag=$mday;
-
-    $jahr=$year +1900;
-
-    if (length($monat) == 1)
-    {
-        $monat="0$monat";
-    }   
-    if(length($tag) == 1)
-    {
-       $tag="0$tag";
-    }
-
-    my $Xdatum=$jahr."-".$monat."-".$tag;
-}
-
-sub gettime {
-
-    my ($sec,$min,$hour,$mday,$mon,$year,$wday,$ydat,$isdst)=localtime();
-    
-    if(length($hour) == 1)
-    {
-       $hour="0$hour";
-    }
-    if(length($min) == 1)
-    {
-       $min="0$min";
-    }
-    if(length($sec) == 1)
-    {
-       $sec="0$sec";
-    }
-
-    my $Xzeit=$hour.":".$min.":".$sec;
-}
-
-sub gethour {
-
-    my ($sec,$min,$hour,$mday,$mon,$year,$wday,$ydat,$isdst)=localtime();
-    
-    if(length($hour) == 1)
-    {
-       $hour="0$hour";
-    }
-    $hour;
-}
-sub getmin {
-
-    my ($sec,$min,$hour,$mday,$mon,$year,$wday,$ydat,$isdst)=localtime();
-    
-    if(length($min) == 1)
-    {
-       $min="0$min";
-    }
-    $min;
-}
-
-sub sendnotice {
-    my $podslug = shift;
-    print $podslug."\n";
-
-}
-
 my $json = JSON->new->allow_nonref;
+
 my $rawdata = get("http://hoersuppe.de/api/?action=getLive&dateStart=".getdate()."&dateEnd=".getdate());
 my $live = $json->decode( $rawdata );
 
 my $my = $live->{"data"};
 
 foreach my $livepod (@$my){
-    my $live = $livepod->{"livedate"};
-    
-    $live =~ m/(\d+-\d+-\d+) ((\d\d):\d\d:\d\d)/;
-    my $date = $1;
-    my $time = $2;
-    my $hour = $3;
-    
     my $podslug = $livepod->{"podcast"};
    
-     if($podslug ne '') {
-        if ($hour == gethour()+1) {
+    if($podslug ne '' and -e "$fileprefix$podslug.xml"){
+ 
+        my $live = $livepod->{"livedate"};
+        $live =~ m/((\d+)-(\d+)-(\d+)) ((\d\d):(\d\d):\d\d)/;
+        my $livedate = $1;
+        my $livetime = $5;
+        my $livehour = $6;
+
+        if ($livehour == (gethour()+1)) {    
 
             print "Schicke Nachricht\n";
-            #print $podslug." läuft am ".$date." um ".$time." Uhr. \n";
-            sendnotice($podslug);
+            my $msg = $podslug." läuft am ".$livedate." um ".$livetime." Uhr.";
+
+            my $reader = XML::LibXML::Reader->new(location => "$fileprefix$podslug.xml");
+
+            while ($reader->read)
+            {
+                my $account = processNode($reader);
+                if($account ne ''){
+                    sendnotice($account,$msg);
+                }
+            }
         }
-        else {
-            print $podslug." nicht relevant - ".$hour." > ".(gethour()+1)."\n";
+        elsif ($livehour < (gethour()+1)) {
+            print $podslug." nicht relevant - ".$livehour." < ".(gethour()+1)."\n";
         }
-     }
+        elsif  ($livehour > (gethour()+1)) {
+            print $podslug." nicht relevant - ".$livehour." > ".(gethour()+1)."\n";
+        }
+    }
+}
+
+#sub for xml-reader
+sub processNode {
+    my $reader = shift;
+    my $account = '';
+    if($reader->name eq "#text")
+    {
+        if($reader->hasValue)
+        {
+            if ($reader->value =~ m/\w+@\w+\..+/) {
+                $account = $reader->value;
+            }
+        }
+    }
+    $account;
+}
+
+sub sendnotice {
+    my ($account,$msg) = @_;
+    my $con = new Net::XMPP::Client();
+    my $status = $con->Connect(hostname => 'fastreboot.de', connectiontype => 'tcpip', tls => 0);
+    die('ERROR: XMPP connection failed') if ! defined($status);
+
+    my @result = $con->AuthSend(hostname => 'fastreboot.de', username => 'sms',password => 'smsinfoclient', resource => 'info');
+    die('ERROR: XMPP authentication failed') if $result[0] ne 'ok';
+
+    die('ERROR: XMPP message failed') if ($con->MessageSend(to => $account, body => $msg) != 0);
+    print "Send to $account\n";
 
 }
 
+sub getdate {
+    my $Xdatum = strftime "%Y-%m-%d", localtime;
+}
+
+sub gethour {
+    my $Xdatum = strftime "%H", localtime;
+}
 

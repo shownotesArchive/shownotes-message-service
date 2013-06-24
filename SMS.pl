@@ -53,7 +53,7 @@ sub message {
         error();
     }
     
-    $con->MessageSend(to => $account, body => $msg);
+    $con->MessageSend(to => $account, type =>'chat' ,body => $msg);
     $msg = '';
     return
 }
