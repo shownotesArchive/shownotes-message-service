@@ -34,11 +34,13 @@ sub send_status {
 sub message {
     my ($sid,$Mess) = @_;
     my $body = $Mess->GetBody();
-    $account = $Mess->GetFrom();
+    my $jid = $Mess->GetFrom();
+    
+    $jid =~ /(\w+@\w+\.\w+)\/.+/;
+    $account = $1;
 
     print "Nachricht von: ".$account."\n";
     print "       Inhalt: ".$body."\n";
-
 
     if($body eq 'help') {
         printhelp();
@@ -107,6 +109,6 @@ sub register {
         $msg = $podslug." registered to ".$account;
     }
     else{
-        $msg = $podslug." nicht verfügbar";
+        $msg = $podslug." not in list";
     }
 }
