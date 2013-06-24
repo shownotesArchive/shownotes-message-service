@@ -1,0 +1,220 @@
+#!/usr/bin/perl -w
+
+use strict;
+use warnings;
+use utf8;
+
+use XML::LibXML::Reader;
+use CGI '3.30', ();
+use CGI::Carp qw( fatalsToBrowser );
+
+my $apititle = 'Shownotes Message Service REST-API';
+
+my $msg = '';
+my $fileprefix = '../xml/';
+my $file = '';
+my $reader;
+
+my $q = CGI->new;
+
+sub GET($$) {
+    my ($path, $code) = @_;
+    return unless $q->request_method eq 'GET' or $q->request_method eq 'HEAD';
+    return unless $q->path_info =~ $path;
+    $code->();
+    exit;
+}
+
+sub POST($$) {
+    my ($path, $code) = @_;
+    return unless $q->request_method eq 'POST';
+    return unless $q->path_info =~ $path;
+    $code->();
+    exit;
+}
+
+sub PUT($$) {
+    my ($path, $code) = @_;
+    return unless $q->request_method eq 'PUT';
+    return unless $q->path_info =~ $path;
+    $code->();
+    exit;
+}
+
+sub DELETE($$) {
+    my ($path, $code) = @_;
+    return unless $q->request_method eq 'DELETE';
+    return unless $q->path_info =~ $path;
+    $code->();
+    exit;
+}
+
+eval {
+    # No arguments provided
+    GET qr{^$} => sub {
+        print $q->header(-status=>200, -type=>'text/html');
+        print $q->start_html(-title=>$apititle, -style=>$apistyle);
+        print $q->h1('Possibly some nice documentation goes here.');
+        print $q->end_html();
+    };
+
+    GET qr{^/tops$} => sub {
+        print $q->header(-status=>200, -type=>'text/html');
+        print $q->start_html(-title=>$apititle, -style=>$apistyle);
+        
+        print "<br><br>";
+
+        print "<p>";
+        print $msg = '';
+        parseOutput("day");
+        print $msg;
+        print "</p>";
+
+        print "<br><br>";
+
+        print "<p>";
+        print $msg = '';
+        parseOutput("week");
+        print $msg;
+        print "</p>";
+
+        print "<br><br>";
+
+        print "<p>";
+        print $msg = '';
+        parseOutput("month");
+        print $msg;
+        print "</p>";
+
+        print "<br><br>";
+
+        print "<p>";
+        print $msg = '';
+        parseOutput("year");
+        print $msg;
+        print "</p>";
+
+        print $q->end_html();
+    };
+
+    GET qr{^/topsof/([A-Za-z]{3,5})$} => sub {
+        print $q->header(-status=>200, -type=>'text/html');
+        print $q->start_html(-title=>$apititle, -style=>$apistyle);
+        print "<br>";
+
+        parseOutput($1);
+
+        print $msg;
+        print $q->end_html();
+    };
+
+    #GET qr{^/id/(\d{1,5})$} => sub {
+    #    print $q->header(-status=>200, -type=>'text/html');
+    #    print $q->start_html(-title=>$apititle, -style=>$apistyle);
+    #    print $q->h1('Your ID is '.$1);
+    #    print $q->end_html();
+    #};
+
+    # Unmatched REST
+    GET qr{^/(.+)$} => sub {
+    # Nothing handles this, throw back a standard 404
+        print $q->header(-status=>404, -type=>'text/html');
+        print $q->start_html(-title=>$apititle, -style=>$apistyle);
+        print $q->h1('Nothing has been matched or the arguments are invalid.');
+        print $q->end_html;
+    };
+
+    exit;
+};
+
+if ($@) {
+    # Handle errors
+    if (ref $@ and reftype $@ eq 'HASH') {
+        my $ERROR = $@;
+        print $q->header(-status=>$ERROR->{status}, -type=>'text/html');
+        print $q->h1($ERROR->{title});
+        print $q->p($ERROR->{message}) if $ERROR->{message};
+        print $q->end_html;
+    }
+
+    # Handle anything else
+    else {
+        # Nothing handles this, throw back a standard 404
+        print $q->header(-status=>404, -type=>'text/html');
+        print $q->start_html(-title=>$apititle, -style=>$apistyle);
+        print $q->h1('Nothing has been matched or the arguments are invalid.');
+        print $q->end_html;
+    }
+    exit;
+}
+
+# xml 
+sub parseOutput {
+    my ($body) = @_;
+
+    if ($body eq 'day')
+    {
+        $file = $fileprefix.'day.xml';
+    }
+    elsif($body eq 'week')
+    {
+        $file = $fileprefix.'week.xml';
+    }
+    elsif($body eq 'month')
+    {
+        $file = $fileprefix.'month.xml';
+    }
+    elsif($body eq 'year')
+    {
+        $file = $fileprefix.'year.xml';
+    }
+    else
+    {
+        return $msg = "<p>ERROR</p>";
+    }
+
+    #print $file."\n";
+    #parse xml
+    $reader = XML::LibXML::Reader->new(location => $file);
+
+    $msg = $msg."<h2>$body</h2>"; 
+    $msg = $msg."\n<ul>";
+    while ($reader->read)
+    {
+        processNode($reader);
+    }
+
+    $msg = $msg."\n</ul>";
+    
+    return $msg;
+}
+
+#sub for xml-reader
+sub processNode {
+    my $reader = shift;
+
+    if($reader->name eq "entry" and $reader->nodeType == 1)
+    {
+        if($reader->hasAttributes){
+            $msg = $msg."\n<p>";
+            $msg = $msg.($reader->getAttribute("index")+1)." ";
+        }
+    }
+    elsif($reader->name eq "#text")
+    {
+        if($reader->hasValue)
+        {
+            if($reader->value =~ /http:\/\/pastebin/)
+            {
+                $msg = $msg."<a href=\"".$reader->value."\">";
+            }
+            else
+            {
+                $msg = $msg.$reader->value."</a>\n</p>";
+            }
+        }
+    }
+
+
+
+}
