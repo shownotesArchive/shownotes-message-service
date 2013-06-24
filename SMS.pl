@@ -43,7 +43,7 @@ sub message {
     if($body eq 'help') {
         printhelp();
     }
-    elsif($body eq 'pod') {
+    elsif($body eq 'list') {
         podlist();
     }
     elsif($body =~ /^reg (.+)/i) {
@@ -63,28 +63,33 @@ sub error {
 }
 
 sub printhelp {
-    $msg = "pod - Get a list of podcasts\nreg <podcastname> - Register a podcast";
+    $msg = "list - Get a list of podcasts\nreg <podcastname> - Register a podcast";
 }
 
-sub podlist() {
-    opendir DIR, $fileprefix or die $!;
-    
-    while( my $entry = readdir DIR ){
+sub podlist {
 
+    opendir DIR, $fileprefix or die $!;
+    my @verzeichnisse = readdir(DIR);
+    
+    @verzeichnisse = sort(@verzeichnisse);
+
+    foreach my $entry (@verzeichnisse) {
+        
         $entry =~ m/(.+)\.xml/;
         if(defined $1) {
             $msg = $msg.$1.";  ";
         }
-    
     }
+    
     closedir DIR;
 }
 
-sub register() {
+sub register {
     my $podslug = shift;
 
     if(-e "$fileprefix$podslug.xml"){
-
+        
+        #Subscriber gegenprüfen
         my $parser = XML::LibXML->new;
         my $doc = $parser->parse_file("$fileprefix$podslug.xml");
 
