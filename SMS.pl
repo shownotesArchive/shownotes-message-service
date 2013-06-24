@@ -78,13 +78,14 @@ sub podlist {
     foreach my $entry (@verzeichnisse) {
         
         $entry =~ m/(.+)\.xml/;
-        if(defined $1) {
+        
+        #hack needs because of regex 
+        if($1 ne $account) {
             $msg = $msg.$1.";  ";
         }
     }
     
     closedir DIR;
-    $msg = '';
 }
 
 sub register {
