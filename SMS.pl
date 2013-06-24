@@ -69,7 +69,6 @@ sub printhelp {
 }
 
 sub podlist {
-    $msg = '';
 
     opendir DIR, $fileprefix or die $!;
     my @verzeichnisse = readdir(DIR);
@@ -85,13 +84,12 @@ sub podlist {
     }
     
     closedir DIR;
+    $msg = '';
 }
 
 sub register {
     my $podslug = shift;
     
-    $msg = '';
-
     if(-e "$fileprefix$podslug.xml"){
         
         #Subscriber gegenprüfen
