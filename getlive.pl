@@ -37,8 +37,8 @@ foreach my $livepod (@$my){
 
         if ($livehour == (gethour()+1)) {    
 
-            print "Schicke Nachricht\n";
-            my $msg = $podslug." läuft am ".$livedate." um ".$livetime." Uhr.";
+            print "Search subscribers for ".$podslug."\n";
+            my $msg = $podslug." starts at ".$livetime;
 
             my $reader = XML::LibXML::Reader->new(location => "$fileprefix$podslug.xml");
 
@@ -46,6 +46,7 @@ foreach my $livepod (@$my){
             {
                 my $account = processNode($reader);
                 if($account ne ''){
+                    print "Send to: ".$account."\n";
                     sendnotice($account,$msg);
                 }
             }
