@@ -1,11 +1,9 @@
 # Shownotes Message Service
 
-## TODO
-* unregister
-* subscriber xml ?
-* zeit interval
-* rest api
+A simple jabber notification service for live podcasts. Based upon the data of [hoersuppe.de](http://hoersuppe.de "hoersuppe.de") form @eazyliving.
 
-## Bugs
-* doppeleinträge vermeiden
-* utf-8 sonderzeichen handeln
+## Basic requirements 
+
+### Perl Packages
+
+## Setup
