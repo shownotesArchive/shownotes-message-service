@@ -7,6 +7,8 @@ use warnings;
 use utf8;
 
 use Data::Dumper;
+use Config::Simple;
+
 use XML::Simple;
 use IO::File;
 use XML::LibXML;
@@ -15,16 +17,22 @@ use Net::XMPP;
 use LWP::Simple;
 use JSON;
 
+my $cfg = new Config::Simple('sms.config');
 
 my $msg = "";
-my $fileprefix = "podcasts/";
-my $account = ''; 
+my $fileprefix = $cfg->param('directory');
+my $account = '';
 my $con = new Net::XMPP::Client();
 my $reader;
 
 $con->SetMessageCallBacks(chat=>\&message);
 $con->SetCallBacks(onauth=>\&send_status);
-$con->Execute(hostname=>'fastreboot.de',port=>5222,username=>'sms',password=>'smsinfoclient',resource=>'service');
+$con->Execute(  hostname=>$cfg->param('server'),
+                port=>$cfg->param('port'),
+                username=>$cfg->param('username'),
+                password=>$cfg->param('password'),
+                resource=>$cfg->param('resource')
+             );
 
 sub send_status {
     print "\nAuthenticated\n";

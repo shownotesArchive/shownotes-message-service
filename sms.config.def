@@ -1,0 +1,11 @@
+#Jabber server
+server  example.org 
+port    5222
+
+# username and password
+username    user
+password    secret
+resource    service
+
+# Data directory
+directory   podcasts/
