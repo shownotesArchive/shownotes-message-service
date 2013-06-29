@@ -13,9 +13,9 @@ sms@fastreboot.de
 
 ## Basic requirements 
 
-### Perl Packages
+## Perl Packages
 
-## Licence
+# Licence
 
 **This programm is published under the terms of GPLv2 and comes with no warranty.**
 **Use it on your own risk.**
