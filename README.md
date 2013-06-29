@@ -1,6 +1,6 @@
 # Shownotes Message Service
 
-A simple jabber notification service for live podcasts. Based upon the data of [hoersuppe.de](http://hoersuppe.de "hoersuppe.de") form @eazyliving.
+A simple jabber notification service for live podcasts. Based upon the data of [hoersuppe.de](http://hoersuppe.de "hoersuppe.de") form [@eazyliving](https://github.com/eazyliving "@eazyliving").
 
 **Give it a try** but beware the sevice is under heavy development. :) 
 
