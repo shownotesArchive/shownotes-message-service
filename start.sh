@@ -8,7 +8,8 @@ if [ ! -f "sms.config" ]; then
 fi
 
 # check directory in config file
-dire=$(cat sms.config | grep directory | perl -n -e'm~(\w+/)~;print $1');
+dire=$(cat sms.config | grep directory | perl -n -e'm~directory\s+([\w+|/]+)~;print $1');
+
 if [ ! -e "$dire" ]; then
     mkdir $dire;
 fi
