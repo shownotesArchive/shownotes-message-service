@@ -96,7 +96,7 @@ sub sendnotice {
     die('ERROR: XMPP connection failed') if ! defined($status);
 
     # authenticate
-    my @result = $con->AuthSend(hostname =>$cfg->param('directory'), username =>$cfg->param('username'),password =>$cfg->param('password'), resource => $cfg->param('info-resource'));
+    my @result = $con->AuthSend(hostname =>$cfg->param('server'), username =>$cfg->param('username'),password =>$cfg->param('password'), resource => $cfg->param('inforesource'));
     die('ERROR: XMPP authentication failed') if $result[0] ne 'ok';
 
     # send a message
