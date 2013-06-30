@@ -11,4 +11,4 @@ inforesource    info
 botresource     service
 
 # Data directory
-directory   podcasts/
+directory   /PATH/TO/DATA/
