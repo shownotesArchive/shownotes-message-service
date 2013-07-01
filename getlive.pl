@@ -79,7 +79,7 @@ sub processNode {
     {
         if($reader->hasValue)
         {
-            if ($reader->value =~ m/\w+@\w+\.\w+/) {
+            if ($reader->value =~ m/.+@.+\.\w+/) {
                 $account = $reader->value;
             }
         }
