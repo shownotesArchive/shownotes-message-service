@@ -9,6 +9,7 @@ use utf8;
 use POSIX;
 use Data::Dumper;
 use Config::Simple;
+use File::Basename;
 
 use XML::LibXML::Reader;
 use XML::Writer;
@@ -19,8 +20,9 @@ use LWP::Simple;
 use JSON;
 
 # make a new config reader object
-my $cfg = new Config::Simple('sms.config');
-my $fileprefix = $cfg->param('directory');
+my $programpath = dirname(__FILE__);
+my $cfg = new Config::Simple("$programpath/sms.config");
+my $datapath = $cfg->param('directory');
 
 # make a JSON parser object
 my $json = JSON->new->allow_nonref;
@@ -35,7 +37,7 @@ foreach my $livepod (@$my){
     my $podslug = $livepod->{"podcast"};
    
     # if slug exists as xml in data directory; go on
-    if($podslug ne '' and -e "$fileprefix$podslug.xml"){
+    if($podslug ne '' and -e "$datapath$podslug.xml"){
  
         my $live = $livepod->{"livedate"};
         $live =~ m/((\d+)-(\d+)-(\d+)) ((\d\d):(\d\d):\d\d)/;
@@ -44,29 +46,28 @@ foreach my $livepod (@$my){
         my $livehour = $6;
 
         # if podcast is in range search for subsribers in xml
-        if ($livehour == (gethour()+1)) {    
+        if ($livehour >= (gethour()+1)) {    
 
             #print "Search subscribers for ".$podslug."\n";
             my $msg = $podslug." starts at ".$livetime;
 
-            my $reader = XML::LibXML::Reader->new(location => "$fileprefix$podslug.xml");
+            my $reader = XML::LibXML::Reader->new(location => "$datapath$podslug.xml");
 
             while ($reader->read)
             {
                 # send a message to each subscriber
                 my $account = processNode($reader);
                 if($account ne ''){
-                    print "Send to: ".$account."\n";
                     sendnotice($account,$msg);
                 }
             }
         }
-        #elsif ($livehour < (gethour()+1)) {
-        #    print $podslug." not in  - ".$livehour." < ".(gethour()+1)."\n";
-        #}
-        #elsif  ($livehour > (gethour()+1)) {
-        #    print $podslug." nicht relevant - ".$livehour." > ".(gethour()+1)."\n";
-        #}
+        elsif ($livehour < (gethour()+1)) {
+            print $podslug." not in  - ".$livehour." < ".(gethour()+1)."\n";
+        }
+        elsif  ($livehour > (gethour()+1)) {
+            print $podslug." nicht relevant - ".$livehour." > ".(gethour()+1)."\n";
+        }
     }
 }
 

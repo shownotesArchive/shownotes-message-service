@@ -55,11 +55,11 @@ sub message {
     my ($sid,$Mess) = @_;
     my $body = $Mess->GetBody();
     my $jid = $Mess->GetFrom();
-    
+   
     # get account without ressource
-    $jid =~ /(\w+@\w+\.\w+)\/.+/;
+    $jid =~ /(.+@.+\.\w+)\/.+/;
     $account = $1;
-
+    
     print "Message from: ".$account."\n";
     print "        Body: ".$body."\n";
 
