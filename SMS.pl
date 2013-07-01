@@ -65,17 +65,14 @@ sub message {
     print "        Body: ".$body."\n";
 
     # command selection
-    if($body eq 'help') {
-        printhelp();
-    }
-    elsif($body eq 'list') {
+    if($body eq 'list') {
         podlist();
     }
     elsif($body =~ /^reg (.+)/i) {
         register($1);
     }
     else {
-        error();
+        printhelp();
     }
     
     # send message back to client
