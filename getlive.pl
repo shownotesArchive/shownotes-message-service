@@ -62,12 +62,12 @@ foreach my $livepod (@$my){
                 }
             }
         }
-        elsif ($livehour < (gethour()+1)) {
-            print $podslug." not in  - ".$livehour." < ".(gethour()+1)."\n";
-        }
-        elsif  ($livehour > (gethour()+1)) {
-            print $podslug." nicht relevant - ".$livehour." > ".(gethour()+1)."\n";
-        }
+        #elsif ($livehour < (gethour()+1)) {
+        #    print $podslug." not in  - ".$livehour." < ".(gethour()+1)."\n";
+        #}
+        #elsif  ($livehour > (gethour()+1)) {
+        #    print $podslug." nicht relevant - ".$livehour." > ".(gethour()+1)."\n";
+        #}
     }
 }
 
