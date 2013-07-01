@@ -15,7 +15,7 @@ if [ ! -e "$dire" ]; then
 fi
 
 # scan and start
-echo "Scaning for new Podcasts"
+echo "Scanning for new Podcasts"
 ./scan.pl
 echo "\nStarting Service"
 ./SMS.pl
