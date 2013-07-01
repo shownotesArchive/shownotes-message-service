@@ -46,7 +46,7 @@ foreach my $livepod (@$my){
         my $livehour = $6;
 
         # if podcast is in range search for subsribers in xml
-        if ($livehour >= (gethour()+1)) {    
+        if ($livehour == (gethour()+1)) {    
 
             #print "Search subscribers for ".$podslug."\n";
             my $msg = $podslug." starts at ".$livetime;
