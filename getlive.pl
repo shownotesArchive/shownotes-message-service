@@ -100,7 +100,7 @@ sub sendnotice {
     die('ERROR: XMPP authentication failed') if $result[0] ne 'ok';
 
     # send a message
-    die('ERROR: XMPP message failed') if ($con->MessageSend(to => $account, body => $msg) != 0);
+    die('ERROR: XMPP message failed') if ($con->MessageSend(to => $account, type =>'headline', body => $msg) != 0);
     print "Send to $account\n";
 
 }
