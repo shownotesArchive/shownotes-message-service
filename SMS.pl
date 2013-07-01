@@ -33,6 +33,7 @@ my $con = new Net::XMPP::Client();
 # set the callback functions
 $con->SetMessageCallBacks(chat=>\&message);
 $con->SetCallBacks(onauth=>\&send_status);
+$con->SetPresenceCallBacks(type=>undef);
 
 # execute jabber client
 $con->Execute(  hostname=>$cfg->param('server'),
@@ -45,8 +46,14 @@ $con->Execute(  hostname=>$cfg->param('server'),
 # status update callback
 sub send_status {
     print "\tAuthenticated\n\n";
-    $con->PresenceSend(show => "available");
+    $con->PresenceSend(show => "chat");
 }
+
+# handle subscribtion of a user
+sub subscribe {
+    print "TEST\n";
+}
+
 
 # callback for message handle
 sub message {
