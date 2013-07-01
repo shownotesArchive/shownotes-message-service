@@ -49,6 +49,12 @@ sub send_status {
     $con->PresenceSend(show => "chat");
 }
 
+# handle subscribtion of a user
+sub subscribe {
+    print "TEST\n";
+}
+
+
 # callback for message handle
 sub message {
     
