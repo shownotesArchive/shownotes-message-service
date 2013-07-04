@@ -10,5 +10,5 @@ password    secret
 inforesource    info
 botresource     service
 
-# Data directory
-directory   /PATH/TO/DATA/
+# Database directory
+directory   /PATH/TO/DATABASEFILE/

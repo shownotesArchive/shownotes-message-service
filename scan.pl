@@ -6,20 +6,28 @@ use strict;
 use warnings;
 use utf8;
 
-use Data::Dumper;
 use Config::Simple;
 
-use XML::LibXML::Reader;
-use XML::Writer;
-use IO::File;
+use DBI;
 
-use Net::XMPP;
+#use IO::File;
+
 use LWP::Simple;
 use JSON;
 
 # make a new config reader object
 my $cfg = new Config::Simple('sms.config');
 my $fileprefix = $cfg->param('directory');
+
+# connect to database
+my $dbh = DBI->connect("dbi:SQLite:dbname=$fileprefix/data.db",
+                       "",
+                       "",
+                       {RaiseError => 1}, #Exceptions instead of error
+) or die $DBI::errstr;
+
+# create table if not exists
+$dbh->do("CREATE TABLE IF NOT EXISTS Podcasts(Slug TEXT UNIQUE, Title TEXT)");
 
 # make a JSON parser object
 my $json = JSON->new->allow_nonref;
@@ -35,30 +43,21 @@ foreach my $podcast (@$my){
     my $podtitle = $podcast->{"title"};
     my $podslug = $podcast->{"slug"};
     
-    if (!(-e "$fileprefix$podslug.xml")) {
-        
-        
-        my $output = IO::File->new(">$fileprefix$podslug.xml");
-        my $writer = XML::Writer->new(OUTPUT => $output);
-        $writer->xmlDecl("UTF-8","yes");
-        $writer->doctype("xml");
 
-        $writer->startTag("xml","podcast" => $podslug);
-        $writer->startTag("title");
-        $writer->characters($podtitle);
-        $writer->endTag("title");
-        $writer->startTag("subscribers");
-        $writer->endTag("subscribers");
-        $writer->endTag("xml");
-        
-        $writer->end();
-        $output->close();
-        
-        print "Podcast ".$podslug." created\n"; 
+
+    my $sth = $dbh->prepare( "SELECT slug FROM Podcasts WHERE slug=$podslug" );  
+    $sth->execute();
+      
+
+    if (undef $sth->fetchrow()) {
+        $dbh->do("INSERT INTO Podcasts VALUES('$podslug','$podtitle')");
+        print "Podcast ".$podslug." created\n";
     }
+    else{
+        print "gibt es\n";
+    }
+
 
 }
 
-
-
-
+$dbh->disconnect();

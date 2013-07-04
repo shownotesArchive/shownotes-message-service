@@ -9,6 +9,8 @@ use utf8;
 use Data::Dumper;
 use Config::Simple;
 
+use DBI;
+
 use XML::Simple;
 use IO::File;
 use XML::LibXML;
@@ -20,12 +22,21 @@ use JSON;
 # make a new config reader object
 my $cfg = new Config::Simple('sms.config');
 
-
 # some global variables
 my $msg = "";
 my $fileprefix = $cfg->param('directory');
 my $account = '';
 my $reader;
+
+# connect to database
+my $dbh = DBI->connect("dbi:SQLite:dbname=$fileprefix/data.db",
+                       "",
+                       "",
+                       {RaiseError => 1}, #Exceptions instead of error
+) or die $DBI::errstr;
+
+# create table if not exists
+$dbh->do("CREATE TABLE IF NOT EXISTS Subscriber(Jid TEXT UNIQUE, Podcast TEXT UNIQUE)");
 
 # make a jabber client object
 my $con = new Net::XMPP::Client();
