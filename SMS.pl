@@ -74,8 +74,14 @@ sub message {
     if($body eq 'list') {
         podlist();
     }
+    elsif($body eq 'reglist') {
+        reglist();
+    }
     elsif($body =~ /^reg (.+)/i) {
         register($1);
+    }
+    elsif($body =~ /^unreg (.+)/i) {
+        unregister($1);
     }
     else {
         printhelp();
@@ -87,14 +93,9 @@ sub message {
     return
 }
 
-# error function
-sub error {
-    $msg = "Not a valid command!\n\nSend \"help\" for a command list";
-}
-
 # help
 sub printhelp {
-    $msg = "list - Get a list of podcasts\nreg <podcastname> - Register a podcast";
+    $msg = "list - Get a list of podcasts\nreg <podcastname> - Subscribe to a podcast notification\nreglist - Get a list of all your subscribtions\nunreg <podcastname> - Unsubscribe a podcast notification";
 }
 
 # list all podcasts
@@ -109,6 +110,44 @@ sub podlist {
     }
 
     $sth->finish();
+}
+
+# lists all subscribed podcasts of a user
+sub reglist {
+    
+    my $sth = $dbh->prepare( "SELECT Slug FROM Subscriber WHERE Jid = \'$account\'" );  
+    $sth->execute();
+          
+    my $column;
+    $msg = $msg."You are subscribed to the following podcasts notifications:\n";
+    while ($column = $sth->fetchrow_array()) {
+        $msg =  $msg."  $column\n";
+    }
+
+    $sth->finish();
+
+}
+
+# unregister a podcast
+sub unregister {
+    my $podslug = shift;
+    #DELETE FROM Books2 WHERE Id=1
+
+    my $sth = $dbh->prepare( "SELECT Slug FROM Subscriber WHERE Slug = \'$podslug\' AND Jid = \'$account\'" );  
+    $sth->execute();
+    if(defined $sth->fetchrow_array()) {
+        $sth->finish();
+        
+        $dbh->do("DELETE FROM Subscriber WHERE Jid = \'$account\' AND Slug = \'$podslug\'");
+        
+        # set message
+        $msg = $podslug." unsubscribed";
+        print "        ".$podslug." unsubscribed for $account\n";
+    }
+    else {
+        $msg = "Not registered to ".$podslug." ";
+        print "        ".$podslug." is not registered to $account\n";
+    }
 }
 
 # register a podcast
@@ -127,7 +166,7 @@ sub register {
         $sth->execute();
         if(defined $sth->fetchrow_array()) {
             $msg = $podslug." already registered";
-            print "        ".$podslug." was already to $account before\n";
+            print "        ".$podslug." was already registered to $account\n";
         }
         else{
             #subscribe account
@@ -144,6 +183,4 @@ sub register {
         print "        Register failed for $podslug\n";
         $sth->finish();
     }
-
-
 }
