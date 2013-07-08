@@ -1,4 +1,5 @@
 *.sh
+*.db
 sms.config
 doc/
 REST-API/
