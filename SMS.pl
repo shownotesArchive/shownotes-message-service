@@ -11,32 +11,27 @@ use Config::Simple;
 
 use DBI;
 
-use XML::Simple;
-use IO::File;
-use XML::LibXML;
-
 use Net::XMPP;
 use LWP::Simple;
 use JSON;
 
-# make a new config reader object
+# make a new config config object
 my $cfg = new Config::Simple('sms.config');
 
 # some global variables
 my $msg = "";
-my $fileprefix = $cfg->param('directory');
+my $programpath = $cfg->param('directory');
 my $account = '';
-my $reader;
 
 # connect to database
-my $dbh = DBI->connect("dbi:SQLite:dbname=$fileprefix/data.db",
+my $dbh = DBI->connect("dbi:SQLite:dbname=$programpath/data.db",
                        "",
                        "",
                        {RaiseError => 1}, #Exceptions instead of error
 ) or die $DBI::errstr;
 
 # create table if not exists
-$dbh->do("CREATE TABLE IF NOT EXISTS Subscriber(Jid TEXT, Slug TEXT UNIQUE)");
+$dbh->do("CREATE TABLE IF NOT EXISTS Subscriber(Jid TEXT, Slug TEXT )");
 
 # make a jabber client object
 my $con = new Net::XMPP::Client();
@@ -131,8 +126,8 @@ sub register {
                                   AND Slug = \'$podslug\'");  
         $sth->execute();
         if(defined $sth->fetchrow_array()) {
-            $msg = $podslug." was registered before";
-            print "        ".$podslug." was registered to $account before\n";
+            $msg = $podslug." already registered";
+            print "        ".$podslug." was already to $account before\n";
         }
         else{
             #subscribe account
