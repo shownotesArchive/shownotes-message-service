@@ -95,7 +95,7 @@ sub message {
 
 # help
 sub printhelp {
-    $msg = "list - Get a list of podcasts\nreg <podcastname> - Subscribe to a podcast notification\nreglist - Get a list of all your subscribtions\nunreg <podcastname> - Unsubscribe a podcast notification";
+    $msg = "list - Get a list of podcasts\nreg <podcast> - Subscribe to a podcast notification\nreglist - Get a list of all your subscribtions\nunreg <podcast | all> - Unsubscribe a podcast notification";
 }
 
 # list all podcasts
@@ -133,20 +133,29 @@ sub unregister {
     my $podslug = shift;
     #DELETE FROM Books2 WHERE Id=1
 
-    my $sth = $dbh->prepare( "SELECT Slug FROM Subscriber WHERE Slug = \'$podslug\' AND Jid = \'$account\'" );  
-    $sth->execute();
-    if(defined $sth->fetchrow_array()) {
-        $sth->finish();
-        
-        $dbh->do("DELETE FROM Subscriber WHERE Jid = \'$account\' AND Slug = \'$podslug\'");
-        
-        # set message
-        $msg = $podslug." unsubscribed";
-        print "        ".$podslug." unsubscribed for $account\n";
+    if ($podslug eq 'all') {
+            $dbh->do("DELETE FROM Subscriber WHERE Jid = \'$account\'");
+            
+            # set message
+            $msg = "Unsubscribed from all podcast notifications";
+            print "        ".$account." all podcast notifiactions\n";
     }
     else {
-        $msg = "Not registered to ".$podslug." ";
-        print "        ".$podslug." is not registered to $account\n";
+        my $sth = $dbh->prepare( "SELECT Slug FROM Subscriber WHERE Slug = \'$podslug\' AND Jid = \'$account\'" );  
+        $sth->execute();
+        if(defined $sth->fetchrow_array()) {
+            $sth->finish();
+            
+            $dbh->do("DELETE FROM Subscriber WHERE Jid = \'$account\' AND Slug = \'$podslug\'");
+            
+            # set message
+            $msg = $podslug." unsubscribed";
+            print "        ".$podslug." unsubscribed for $account\n";
+        }
+        else {
+            $msg = "Not registered to ".$podslug." ";
+            print "        ".$podslug." is not registered to $account\n";
+        }
     }
 }
 
