@@ -11,9 +11,7 @@ use Data::Dumper;
 use Config::Simple;
 use File::Basename;
 
-use XML::LibXML::Reader;
-use XML::Writer;
-use IO::File;
+use DBI;
 
 use Net::XMPP;
 use LWP::Simple;
@@ -23,6 +21,13 @@ use JSON;
 my $programpath = dirname(__FILE__);
 my $cfg = new Config::Simple("$programpath/sms.config");
 my $datapath = $cfg->param('directory');
+
+# connect to database
+my $dbh = DBI->connect("dbi:SQLite:dbname=$programpath/data.db",
+                       "",
+                       "",
+                       {RaiseError => 1}, #Exceptions instead of error
+) or die $DBI::errstr;
 
 # make a JSON parser object
 my $json = JSON->new->allow_nonref;
@@ -35,61 +40,41 @@ my $live = $json->decode( $rawdata );
 my $my = $live->{"data"};
 foreach my $livepod (@$my){
     my $podslug = $livepod->{"podcast"};
-   
-    # if slug exists as xml in data directory; go on
-    if($podslug ne '' and -e "$datapath$podslug.xml"){
- 
+    
+    my $sth = $dbh->prepare( "SELECT Slug FROM Podcasts WHERE Slug = \'$podslug\'" );
+    $sth->execute();
+          
+    if(defined $sth->fetchrow_array()) {
+        $sth->finish();
+
         my $live = $livepod->{"livedate"};
         $live =~ m/((\d+)-(\d+)-(\d+)) ((\d\d):(\d\d):\d\d)/;
         my $livedate = $1;
         my $livetime = $5;
         my $livehour = $6;
 
-        # if podcast is in range search for subsribers in xml
-        if ($livehour == (gethour()+1)) {    
+        # if podcast is in range search for subsribers
+        if ($livehour == (gethour()+1)) {   
 
             #print "Search subscribers for ".$podslug."\n";
-            my $msg = $podslug." starts at ".$livetime;
+            my $sth = $dbh->prepare( "SELECT Jid FROM Subscriber WHERE Slug = \'$podslug\'");  
+            $sth->execute();
 
-            my $reader = XML::LibXML::Reader->new(location => "$datapath$podslug.xml");
-
-            while ($reader->read)
-            {
-                # send a message to each subscriber
-                my $account = processNode($reader);
-                if($account ne ''){
-                    sendnotice($account,$msg);
-                }
+            my $account;
+            while ($account = $sth->fetchrow_array()) {
+                    
+               my $msg = $podslug." starts at ".$livetime;
+               sendnotice($account,$podslug,$msg);
             }
+            $sth->finish();
         }
-        #elsif ($livehour < (gethour()+1)) {
-        #    print $podslug." not in  - ".$livehour." < ".(gethour()+1)."\n";
-        #}
-        #elsif  ($livehour > (gethour()+1)) {
-        #    print $podslug." nicht relevant - ".$livehour." > ".(gethour()+1)."\n";
-        #}
-    }
-}
 
-#sub for xml-reader
-sub processNode {
-    my $reader = shift;
-    my $account = '';
-    if($reader->name eq "#text")
-    {
-        if($reader->hasValue)
-        {
-            if ($reader->value =~ m/.+@.+\.\w+/) {
-                $account = $reader->value;
-            }
-        }
     }
-    $account;
-}
+}    
 
 # send notification to subscriber
 sub sendnotice {
-    my ($account,$msg) = @_;
+    my ($account,$podslug,$msg) = @_;
 
     # Make a new Jabber object an connect
     my $con = new Net::XMPP::Client();
@@ -101,8 +86,9 @@ sub sendnotice {
     die('ERROR: XMPP authentication failed') if $result[0] ne 'ok';
 
     # send a message
-    die('ERROR: XMPP message failed') if ($con->MessageSend(to => $account, type =>'headline', body => $msg) != 0);
-    print "Send to $account\n";
+    # type = "headline" for penetrant notfication on client-side
+    die('ERROR: XMPP message failed') if ($con->MessageSend(to => $account, type =>'chat', body => $msg) != 0);
+    print "Send notification about $podslug to $account\n";
 
 }
 

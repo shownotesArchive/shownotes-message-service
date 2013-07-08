@@ -1,6 +1,7 @@
 *.sh
 *.db
 sms.config
+*.db
 doc/
 REST-API/
 podcasts/

@@ -12,6 +12,9 @@ dire=$(cat sms.config | grep directory | perl -n -e'm~directory\s+([\w+|/]+)~;pr
 
 if [ ! -e "$dire" ]; then
     mkdir $dire;
+    cd $dire;
+    touch data.db #will be configureable in the future
+    cd ..;
 fi
 
 # scan and start
