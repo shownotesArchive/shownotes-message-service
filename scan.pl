@@ -38,26 +38,14 @@ my $podcasts = $json->decode( $rawdata );
 
 my $my = $podcasts->{"data"};
 
-# write a new xml for each slug if not exist
+# insert Podcasts in DB
 foreach my $podcast (@$my){
     my $podtitle = $podcast->{"title"};
     my $podslug = $podcast->{"slug"};
+
+    $dbh->do("INSERT INTO Podcasts VALUES('$podslug','$podtitle')");
     
-
-
-    my $sth = $dbh->prepare( "SELECT slug FROM Podcasts WHERE slug=$podslug" );  
-    $sth->execute();
-      
-
-    if (undef $sth->fetchrow()) {
-        $dbh->do("INSERT INTO Podcasts VALUES('$podslug','$podtitle')");
-        print "Podcast ".$podslug." created\n";
-    }
-    else{
-        print "gibt es\n";
-    }
-
-
+    print "Podcast ".$podslug." created\n";
 }
 
 $dbh->disconnect();

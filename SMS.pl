@@ -36,7 +36,7 @@ my $dbh = DBI->connect("dbi:SQLite:dbname=$fileprefix/data.db",
 ) or die $DBI::errstr;
 
 # create table if not exists
-$dbh->do("CREATE TABLE IF NOT EXISTS Subscriber(Jid TEXT UNIQUE, Podcast TEXT UNIQUE)");
+$dbh->do("CREATE TABLE IF NOT EXISTS Subscriber(Jid TEXT, Slug TEXT UNIQUE)");
 
 # make a jabber client object
 my $con = new Net::XMPP::Client();
@@ -104,54 +104,51 @@ sub printhelp {
 
 # list all podcasts
 sub podlist {
-
-    # open data directory and concatenate them to the message
-    opendir DIR, $fileprefix or die $!;
-    my @directories = readdir(DIR);
     
-    @directories = sort(@directories);
-
-    foreach my $entry (@directories) {
-        
-        $entry =~ m/(.+)\.xml/;
-        
-        #hack needs because of regex 
-        if($1 ne $account) {
-            $msg = $msg.$1.";  ";
-        }
+    my $sth = $dbh->prepare( "SELECT Slug FROM Podcasts" );  
+    $sth->execute();
+          
+    my $column;
+    while ($column = $sth->fetchrow_array()) {
+        $msg =  $msg."$column; ";
     }
-    
-    closedir DIR;
+
+    $sth->finish();
 }
 
 # register a podcast
 sub register {
     my $podslug = shift;
-    
-    # write subscriber to xml if slug is available as xml
-    if(-e "$fileprefix$podslug.xml"){
 
-        # open xml    
-        my $parser = XML::LibXML->new;
-        my $doc = $parser->parse_file("$fileprefix$podslug.xml");
-
-        my ($node) = $doc->findnodes('/xml/subscribers');
-
-        # add subscriber as new element
-        my $new_element= $doc->createElement("subscriber");
-        $new_element->appendText($account);
-
-        $node->appendChild($new_element);
+    my $sth = $dbh->prepare( "SELECT Slug FROM Podcasts WHERE Slug = \'$podslug\'" );  
+    $sth->execute();
+          
+    if(defined $sth->fetchrow_array()) {
+        $sth->finish();
         
-        #write file
-        open my $out, '>', "$fileprefix$podslug.xml";
-        binmode $out; # as above
-        $doc->toFH($out);
-        
-        # set message
-        $msg = $podslug." registered to ".$account;
+        my $sth = $dbh->prepare( "SELECT Slug FROM Subscriber
+                                  WHERE Jid = \'$account\'
+                                  AND Slug = \'$podslug\'");  
+        $sth->execute();
+        if(defined $sth->fetchrow_array()) {
+            $msg = $podslug." was registered before";
+            print "        ".$podslug." was registered to $account before\n";
+        }
+        else{
+            #subscribe account
+            $dbh->do("INSERT INTO Subscriber VALUES('$account','$podslug')");
+            
+            # set message
+            $msg = $podslug." registered to ".$account;
+            print "        ".$podslug." registered for $account\n";
+        }
+        $sth->finish();
     }
     else{
         $msg = $podslug." not in list";
+        print "        Register failed for $podslug\n";
+        $sth->finish();
     }
+
+
 }
