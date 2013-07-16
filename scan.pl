@@ -42,10 +42,24 @@ my $my = $podcasts->{"data"};
 foreach my $podcast (@$my){
     my $podtitle = $podcast->{"title"};
     my $podslug = $podcast->{"slug"};
-
-    $dbh->do("INSERT INTO Podcasts VALUES('$podslug','$podtitle')");
     
-    print "Podcast ".$podslug." created\n";
+    my $sth = $dbh->prepare( "SELECT Slug FROM Podcasts WHERE Slug = \'$podslug\'" );  
+    $sth->execute();
+    
+    if(defined $sth->fetchrow_array()) {
+        $sth->finish();
+        
+        print "Podcast ".$podslug." is in list\n";    
+        
+    }
+    else {
+        $sth->finish();
+        
+        $dbh->do("INSERT INTO Podcasts VALUES('$podslug','$podtitle')");
+
+        print "\t--> Podcast ".$podslug." created\n";    
+    }
+
 }
 
 $dbh->disconnect();
