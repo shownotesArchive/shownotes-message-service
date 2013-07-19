@@ -28,9 +28,9 @@ sms@fastreboot.de
 
 ## Deeper introductions
 
-[doc/jabber-service-setup.md](doc/jabber-service-setup.md "Here you will find the basic setup for the notification service.")
+[Here you will find the basic setup for the notification service.](doc/jabber-service-setup.md "Here you will find the basic setup for the notification service.")
 
-[doc/rest-client-setup.md](doc/rest-client-setup.md "Here you will find the additional setup for the REST client.")
+[Here you will find the additional setup for the REST client.](doc/rest-client-setup.md "Here you will find the additional setup for the REST client.")
 
 # Licence
 
