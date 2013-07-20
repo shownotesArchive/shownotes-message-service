@@ -4,12 +4,28 @@ use strict;
 use warnings;
 use utf8;
 
-use XML::LibXML::Reader;
 use CGI '3.30', ();
 use CGI::Carp qw( fatalsToBrowser );
 
+use Config::Simple;
+use DBI;
+
 my $apititle = 'Shownotes Message Service REST-API';
 my $apistyle = 'rest.css';
+
+# make a new config config object
+my $cfg = new Config::Simple('sms.config');
+
+# some global variables
+my $programpath = $cfg->param('directory');
+my $account = '';
+
+# connect to database
+my $dbh = DBI->connect("dbi:SQLite:dbname=$programpath/data.db",
+                       "",
+                       "",
+                       {RaiseError => 1}, #Exceptions instead of error
+) or die $DBI::errstr;
 
 my $q = CGI->new;
 
@@ -66,11 +82,23 @@ eval {
         print $q->end_html();
     };
 
-    #GET qr{^/topsof/([A-Za-z]{3,5})$} => sub {
-    #    print $q->header(-status=>200, -type=>'text/html');
-    #    print $q->start_html(-title=>$apititle, -style=>$apistyle);
-    #    print $q->end_html();
-    #};
+    GET qr{^/subscribers$} => sub {
+        
+        print $q->header(-status=>200, -type=>'text/html');
+        print $q->start_html(-title=>$apititle, -style=>$apistyle);
+        
+        my $sth = $dbh->prepare( "SELECT distinct jid FROM Subscriber" );  
+        $sth->execute();
+          
+        my $column;
+        while ($column = $sth->fetchrow_array()) {
+            print "<p>".$column."<p>\n";
+        }
+
+        $sth->finish();
+
+        print $q->end_html();
+    };
 
     #GET qr{^/id/(\d{1,5})$} => sub {
     #    print $q->header(-status=>200, -type=>'text/html');
