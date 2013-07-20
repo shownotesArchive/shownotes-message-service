@@ -3,3 +3,4 @@
 sms.config
 *.db
 doc/
+.htusers
