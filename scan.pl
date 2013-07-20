@@ -27,7 +27,10 @@ my $dbh = DBI->connect("dbi:SQLite:dbname=$fileprefix/data.db",
 ) or die $DBI::errstr;
 
 # create table if not exists
-$dbh->do("CREATE TABLE IF NOT EXISTS Podcasts(Slug TEXT UNIQUE, Title TEXT)");
+$dbh->do("CREATE TABLE IF NOT EXISTS Podcasts(
+                    Slug TEXT PRIMARY KEY,
+                    Title TEXT
+        )");
 
 # make a JSON parser object
 my $json = JSON->new->allow_nonref;
@@ -42,24 +45,10 @@ my $my = $podcasts->{"data"};
 foreach my $podcast (@$my){
     my $podtitle = $podcast->{"title"};
     my $podslug = $podcast->{"slug"};
-    
-    my $sth = $dbh->prepare( "SELECT Slug FROM Podcasts WHERE Slug = \'$podslug\'" );  
-    $sth->execute();
-    
-    if(defined $sth->fetchrow_array()) {
-        $sth->finish();
         
-        print "Podcast ".$podslug." is in list\n";    
-        
-    }
-    else {
-        $sth->finish();
-        
-        $dbh->do("INSERT INTO Podcasts VALUES('$podslug','$podtitle')");
+    $dbh->do("INSERT OR IGNORE INTO Podcasts VALUES('$podslug','$podtitle')");
 
-        print "\t--> Podcast ".$podslug." created\n";    
-    }
-
+    print "\t--> Podcast ".$podslug." created\n";    
 }
 
 $dbh->disconnect();

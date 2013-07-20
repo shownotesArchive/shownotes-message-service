@@ -57,7 +57,7 @@ foreach my $livepod (@$my){
         if ($livehour == (gethour()+1)) {   
 
             #print "Search subscribers for ".$podslug."\n";
-            my $sth = $dbh->prepare( "SELECT Jid FROM Subscriber WHERE Slug = \'$podslug\'");  
+            my $sth = $dbh->prepare( "SELECT Jid FROM Subscriptions WHERE Slug = \'$podslug\'");  
             $sth->execute();
 
             my $account;

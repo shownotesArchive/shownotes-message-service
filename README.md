@@ -3,20 +3,43 @@
 A simple jabber notification service for live podcasts. Based upon the data of [hoersuppe.de](http://hoersuppe.de "hoersuppe.de") from [@eazyliving](https://github.com/eazyliving "@eazyliving").
 <br>
 <br>
-**Give it a try** but beware the sevice is under heavy development. :) 
+**Give it a try** but beware the service is under heavy development. :) 
 
-Send **help** with your favorite Jabber/XMPP client to:<br>
 <pre>
 sms@fastreboot.de
 </pre>
 
-# Service Setup
+# Available commands
+```
+list - Get a list of podcasts you could subscribe
+reg <podcast> - Subscribe to a podcast notification
+reglist - Get a list of all your subscription
+unreg <podcast | all> - Unsubscribe a podcast notifcation
+```
 
-## Basic requirements 
+# Setup
 
-## Perl Packages
+## Basic requirements for all scripts
+* perl 5.14
+* sqlite3
 
-# Licence
+## Perl modules
 
-**This programm is published under the terms of GPLv2 and comes with no warranty.**
+* Config:Simple
+* POSIX
+* File:Basename
+* DBI
+* Net::XMPP
+* LWP::Simple
+* JSON
+
+## Further introductions
+
+[Basic setup for the Shownotes Message Service.](doc/jabber-service-setup.md "Basic setup for the Shownotes Message Service.")
+
+[Additional setup for the REST client.](doc/rest-client-setup.md "Additional setup for the REST client.")
+
+## Licence
+
+**This program is published under the terms of GPLv2 and comes with no warranty.**
 **Use it on your own risk.**

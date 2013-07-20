@@ -1,0 +1,29 @@
+<VirtualHost *:80>
+	ServerName rest.domain.tld
+	ServerAdmin hostmaster@domain.tld
+
+	DocumentRoot /path/to/rest-script
+
+    ScriptAlias / /path/to/rest-script/
+    
+    <Directory "/path/to/rest-script/">
+        AllowOverride AuthConfig
+
+        AuthType Basic
+        Authname "Shownotes Message Service"
+        AuthUserFile /path/to/rest-script/.htusers
+        AuthGroupFile /dev/null
+
+        require valid-user
+
+        Options +ExecCGI -MultiViews +SymLinksIfOwnerMatch
+        Order allow,deny
+        Allow from all
+    </Directory>
+
+
+	ErrorLog /var/log/apache2/rest_error.log
+	CustomLog /var/log/apache2/rest.log combined
+
+	Options None 
+</VirtualHost>

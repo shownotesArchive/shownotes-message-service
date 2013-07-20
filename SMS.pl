@@ -30,8 +30,29 @@ my $dbh = DBI->connect("dbi:SQLite:dbname=$programpath/data.db",
                        {RaiseError => 1}, #Exceptions instead of error
 ) or die $DBI::errstr;
 
-# create table if not exists
-$dbh->do("CREATE TABLE IF NOT EXISTS Subscriber(Jid TEXT, Slug TEXT )");
+$dbh->do("PRAGMA foreign_keys = ON");
+
+# create Subscription table if not exists
+$dbh->do("CREATE TABLE IF NOT EXISTS subscriptions(
+                Jid TEXT NOT NULL REFERENCES Subscribers(Jid) ON DELETE CASCADE, 
+                Slug TEXT NOT NULL REFERENCES Podcasts(Slug) ON DELETE CASCADE, 
+                Timestamp INT NOT NULL, 
+                Service INT NOT NULL
+        )");
+
+# create Subscription table if not exists
+$dbh->do("CREATE TABLE IF NOT EXISTS Subscribers(
+                Jid TEXT NOT NULL, 
+                pad TEXT,
+                info INT NOT NULL DEFAULT 0,
+                PRIMARY KEY(Jid)
+        )");
+
+$dbh->do("CREATE TRIGGER IF NOT EXISTS update_subscribers AFTER DELETE ON subscriptions
+            BEGIN
+                DELETE FROM subscribers WHERE jid NOT IN (SELECT DISTINCT jid FROM subscriptions);
+            END
+         ");
 
 # make a jabber client object
 my $con = new Net::XMPP::Client();
@@ -101,7 +122,7 @@ sub printhelp {
 # list all podcasts
 sub podlist {
     
-    my $sth = $dbh->prepare( "SELECT Slug FROM Podcasts" );  
+    my $sth = $dbh->prepare("SELECT Slug FROM Podcasts");
     $sth->execute();
           
     my $column;
@@ -115,7 +136,7 @@ sub podlist {
 # lists all subscribed podcasts of a user
 sub reglist {
     
-    my $sth = $dbh->prepare( "SELECT Slug FROM Subscriber WHERE Jid = \'$account\'" );  
+    my $sth = $dbh->prepare("SELECT Slug FROM Subscriptions WHERE Jid = \'$account\'");
     $sth->execute();
           
     my $column;
@@ -125,37 +146,25 @@ sub reglist {
     }
 
     $sth->finish();
-
 }
 
 # unregister a podcast
 sub unregister {
     my $podslug = shift;
-    #DELETE FROM Books2 WHERE Id=1
-
+    
     if ($podslug eq 'all') {
-            $dbh->do("DELETE FROM Subscriber WHERE Jid = \'$account\'");
+        $dbh->do("DELETE FROM Subscribers WHERE Jid = \'$account\'");
             
-            # set message
-            $msg = "Unsubscribed from all podcast notifications";
-            print "        ".$account." all podcast notifiactions\n";
+        # set message
+        $msg = "Unsubscribed from all podcast notifications";
+        print "        ".$account." all podcast notifiactions\n";
     }
     else {
-        my $sth = $dbh->prepare( "SELECT Slug FROM Subscriber WHERE Slug = \'$podslug\' AND Jid = \'$account\'" );  
-        $sth->execute();
-        if(defined $sth->fetchrow_array()) {
-            $sth->finish();
+        $dbh->do("DELETE FROM Subscriptions WHERE Jid = \'$account\' AND Slug = \'$podslug\'");
             
-            $dbh->do("DELETE FROM Subscriber WHERE Jid = \'$account\' AND Slug = \'$podslug\'");
-            
-            # set message
-            $msg = $podslug." unsubscribed";
-            print "        ".$podslug." unsubscribed for $account\n";
-        }
-        else {
-            $msg = "Not registered to ".$podslug." ";
-            print "        ".$podslug." is not registered to $account\n";
-        }
+        # set message
+        $msg = $podslug." unsubscribed";
+        print "        ".$podslug." unsubscribed for $account\n";
     }
 }
 
@@ -163,15 +172,15 @@ sub unregister {
 sub register {
     my $podslug = shift;
 
-    my $sth = $dbh->prepare( "SELECT Slug FROM Podcasts WHERE Slug = \'$podslug\'" );  
+    my $sth = $dbh->prepare("SELECT Slug FROM Podcasts WHERE Slug = \'$podslug\'");  
     $sth->execute();
           
     if(defined $sth->fetchrow_array()) {
         $sth->finish();
         
-        my $sth = $dbh->prepare( "SELECT Slug FROM Subscriber
+        my $sth = $dbh->prepare("SELECT Slug FROM Subscriptions
                                   WHERE Jid = \'$account\'
-                                  AND Slug = \'$podslug\'");  
+                                  AND Slug = \'$podslug\'");
         $sth->execute();
         if(defined $sth->fetchrow_array()) {
             $msg = $podslug." already registered";
@@ -179,7 +188,10 @@ sub register {
         }
         else{
             #subscribe account
-            $dbh->do("INSERT INTO Subscriber VALUES('$account','$podslug')");
+            $dbh->do("INSERT OR IGNORE INTO Subscribers VALUES('$account',NULL,0)");
+
+            my $timestamp = time;
+            $dbh->do("INSERT OR IGNORE INTO Subscriptions VALUES('$account','$podslug',$timestamp,0)");
             
             # set message
             $msg = $podslug." registered to ".$account;
