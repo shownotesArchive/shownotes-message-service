@@ -87,7 +87,7 @@ eval {
         print $q->header(-status=>200, -type=>'text/html');
         print $q->start_html(-title=>$apititle, -style=>$apistyle);
         
-        my $sth = $dbh->prepare( "SELECT distinct jid FROM Subscriber" );  
+        my $sth = $dbh->prepare( "SELECT jid FROM Subscribers" );  
         $sth->execute();
           
         my $column;
