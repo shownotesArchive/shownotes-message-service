@@ -5,10 +5,17 @@ A simple jabber notification service for live podcasts. Based upon the data of [
 <br>
 **Give it a try** but beware the service is under heavy development. :) 
 
-Send **help** with your favorite Jabber/XMPP client to:<br>
 <pre>
 sms@fastreboot.de
 </pre>
+
+# Available commands
+```
+list - Get a list of podcasts you could subscribe
+reg <podcast> - Subscribe to a podcast notification
+reglist - Get a list of all your subscription
+unreg <podcast | all> - Unsubscribe a podcast notifcation
+```
 
 # Setup
 
@@ -16,7 +23,7 @@ sms@fastreboot.de
 * perl 5.14
 * sqlite3
 
-## Perl Packages
+## Perl modules
 
 * Config:Simple
 * POSIX
@@ -26,13 +33,13 @@ sms@fastreboot.de
 * LWP::Simple
 * JSON
 
-## Deeper introductions
+## Further introductions
 
-[Here you will find the basic setup for the notification service.](doc/jabber-service-setup.md "Here you will find the basic setup for the notification service.")
+[Basic setup for the Shownotes Message Service.](doc/jabber-service-setup.md "Basic setup for the Shownotes Message Service.")
 
-[Here you will find the additional setup for the REST client.](doc/rest-client-setup.md "Here you will find the additional setup for the REST client.")
+[Additional setup for the REST client.](doc/rest-client-setup.md "Additional setup for the REST client.")
 
-# Licence
+## Licence
 
-**This programm is published under the terms of GPLv2 and comes with no warranty.**
+**This program is published under the terms of GPLv2 and comes with no warranty.**
 **Use it on your own risk.**

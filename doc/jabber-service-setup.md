@@ -1,4 +1,4 @@
-# Basic setup - shownotes message service 
+# Basic setup - Shownotes Message Service 
 
 ## Special requirements
 * cron or a similar service
@@ -27,8 +27,8 @@ It should look like the following example
 0 0 * * * /path/to/your/script/scan.pl
 ```
 
-scan.pl will scan every 24 hours for new podcasts which could be subscribed
-getlive.pl will scan every hour for new live events and send notifications to each subscriber if necessary.
+* scan.pl will scan every 24 hours for new podcasts which could be subscribed
+* getlive.pl will scan every hour for new live events and send notifications to each subscriber if necessary.
 
 ## Step 3 - Start the jabber service
 
