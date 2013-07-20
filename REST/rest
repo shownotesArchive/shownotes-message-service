@@ -14,7 +14,7 @@ my $apititle = 'Shownotes Message Service REST-API';
 my $apistyle = 'rest.css';
 
 # make a new config config object
-my $cfg = new Config::Simple('sms.config');
+my $cfg = new Config::Simple('../sms.config');
 
 # some global variables
 my $programpath = $cfg->param('directory');
