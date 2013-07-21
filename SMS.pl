@@ -177,31 +177,33 @@ sub register {
           
     if(defined $sth->fetchrow_array()) {
         $sth->finish();
+
+        $dbh->do("INSERT OR IGNORE INTO Subscribers VALUES('$account',NULL,0)");
+
+        my $timestamp = time;
+        #$dbh->do("INSERT OR IGNORE INTO Subscriptions VALUES('$account','$podslug',$timestamp,0)");
+        $dbh->do("INSERT INTO Subscriptions 
+                    SELECT '$account','$podslug',$timestamp,0 
+                    WHERE NOT EXISTS (
+                        SELECT jid,slug 
+                        FROM subscriptions 
+                        WHERE jid like '$account'
+                        AND slug like '$podslug'
+                    )
+                    AND '$podslug' IN (
+                        SELECT slug
+                        FROM podcasts
+                    )
+              ");
+            
+        # set message
+        $msg = $podslug." registered to ".$account;
+        print "        ".$podslug." registered for $account\n";
         
-        my $sth = $dbh->prepare("SELECT Slug FROM Subscriptions
-                                  WHERE Jid = \'$account\'
-                                  AND Slug = \'$podslug\'");
-        $sth->execute();
-        if(defined $sth->fetchrow_array()) {
-            $msg = $podslug." already registered";
-            print "        ".$podslug." was already registered to $account\n";
         }
         else{
-            #subscribe account
-            $dbh->do("INSERT OR IGNORE INTO Subscribers VALUES('$account',NULL,0)");
-
-            my $timestamp = time;
-            $dbh->do("INSERT OR IGNORE INTO Subscriptions VALUES('$account','$podslug',$timestamp,0)");
-            
-            # set message
-            $msg = $podslug." registered to ".$account;
-            print "        ".$podslug." registered for $account\n";
+            $msg = $podslug." not in list";
+            print "        Register failed for $podslug\n";
+            $sth->finish();
         }
-        $sth->finish();
-    }
-    else{
-        $msg = $podslug." not in list";
-        print "        Register failed for $podslug\n";
-        $sth->finish();
-    }
 }
