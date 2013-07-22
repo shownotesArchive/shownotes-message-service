@@ -98,11 +98,16 @@ sub message {
     elsif($body eq 'reglist') {
         reglist();
     }
-    elsif($body =~ /^reg (.+)/i) {
+    elsif($body =~ /^reg ([\w|\d|-]+)/i) {
         register($1);
     }
-    elsif($body =~ /^unreg (.+)/i) {
+    elsif($body =~ /^unreg ([\w|\d|-]+)/i) {
         unregister($1);
+    }
+    elsif($body eq ''){
+        print "--- fail\n";
+        # do nothing... 
+        # workaround for empty message bodys
     }
     else {
         printhelp();
