@@ -10,8 +10,9 @@ use CGI::Carp qw( fatalsToBrowser );
 use Config::Simple;
 use DBI;
 
+use JSON;
+
 my $apititle = 'Shownotes Message Service REST-API';
-my $apistyle = 'rest.css';
 
 # make a new config config object
 my $cfg = new Config::Simple('../sms.config');
@@ -63,54 +64,99 @@ sub DELETE($$) {
 
 eval {
 
-    # PUT Subscribtion
+    # PUT subscribe a new user
     POST qr{^/subscribe$} => sub {
-        my @keywords = $q->param( 'POSTDATA' );
-                        
         print $q->header(-status=>200, -type=>'text/html');
-        print $q->start_html(-title=>$apititle, -style=>$apistyle);
+        my @keywords = $q->param( 'POSTDATA' );
+        print "test \n\n";
         print @keywords;
         print "\n";
-        print $q->end_html();
     };
 
     # No arguments provided
     GET qr{^$} => sub {
         print $q->header(-status=>200, -type=>'text/html');
-        print $q->start_html(-title=>$apititle, -style=>$apistyle);
-        print $q->h1('Possibly some nice documentation goes here.');
+        print $q->start_html(-title=>$apititle);
+        print $q->h1('Nice documentation goes here.');
         print $q->end_html();
     };
-
-    GET qr{^/subscribers$} => sub {
+    
+    # GET infos about all subscribers
+    GET qr{^/subscriber$} => sub {
         
-        print $q->header(-status=>200, -type=>'text/html');
-        print $q->start_html(-title=>$apititle, -style=>$apistyle);
-        
-        my $sth = $dbh->prepare( "SELECT jid FROM Subscribers" );  
-        $sth->execute();
-          
-        my $column;
-        while ($column = $sth->fetchrow_array()) {
-            print "<p>".$column."<p>\n";
+        my $res = $dbh->selectall_arrayref( "SELECT * FROM Subscribers WHERE pad NOT NULL" );  
+         
+        if(@$res){
+            print $q->header(-status=>200, -type=>'application/json');
+            print JSON->new->encode($res);
+        }  
+        else {
+            print $q->header(-status=>204, -type=>'text/html');
         }
-
-        $sth->finish();
-
-        print $q->end_html();
     };
 
-    #GET qr{^/id/(\d{1,5})$} => sub {
-    #    print $q->header(-status=>200, -type=>'text/html');
-    #    print $q->start_html(-title=>$apititle, -style=>$apistyle);
-    #    print $q->end_html();
-    #};
+
+    # GET infos about a particular subscriber
+    GET qr{^/subscriber/([\w|\d|-]+@[\w|\d|-]+\.\w+)$} => sub {
+        
+        my $res = $dbh->selectall_arrayref( "SELECT pad,info FROM Subscribers WHERE jid LIKE '$1' AND pad not null" );  
+        if(@$res){
+            print $q->header(-status=>200, -type=>'application/json');
+            print JSON->new->encode($res);
+        }  
+        else {
+            print $q->header(-status=>204, -type=>'text/html');
+        }
+    };
+
+    # GET infos about all subscriptions
+    GET qr{^/subscriptions$} => sub {
+        
+        my $res = $dbh->selectall_arrayref( "SELECT jid,slug FROM Subscriptions" );  
+        
+        if(@$res){
+            print $q->header(-status=>200, -type=>'application/json');
+            print JSON->new->encode($res);
+        }  
+        else {
+            print $q->header(-status=>204, -type=>'text/html');
+        }
+    };
+
+    # GET infos about all subscriptions of one particular user
+    GET qr{^/subscriptions/id/([\w|\d|-]+@[\w|\d|-]+\.\w+)$} => sub {
+        
+        my $res = $dbh->selectall_arrayref( "SELECT slug FROM Subscriptions WHERE jid LIKE '$1'" );  
+        
+        if(@$res){
+            print $q->header(-status=>200, -type=>'application/json');
+            print JSON->new->encode($res);
+        }  
+        else {
+            print $q->header(-status=>204, -type=>'text/html');
+        }
+    };
+
+    # GET infos about all subscribed slugs of one particular user
+    GET qr{^/subscriptions/slug/([\w|\d|-]+)$} => sub {
+         
+        my $res = $dbh->selectall_arrayref( "SELECT jid FROM Subscriptions WHERE slug LIKE '$1'" );  
+         
+        if(@$res){
+            print $q->header(-status=>200, -type=>'application/json');
+            print JSON->new->encode($res);
+        }  
+        else {
+            print $q->header(-status=>204, -type=>'text/html');
+        }
+    };
+
 
     # Unmatched REST
-    GET qr{^/(.+)$} => sub {
-    # Nothing handles this, throw back a standard 404
+    GET qr{^/(.+)?$} => sub {
+        # Nothing handles this, throw back a standard 404
         print $q->header(-status=>404, -type=>'text/html');
-        print $q->start_html(-title=>$apititle, -style=>$apistyle);
+        print $q->start_html(-title=>$apititle);
         print $q->h1('Nothing has been matched or the arguments are invalid.');
         print $q->end_html;
     };
@@ -132,7 +178,7 @@ if ($@) {
     else {
         # Nothing handles this, throw back a standard 404
         print $q->header(-status=>404, -type=>'text/html');
-        print $q->start_html(-title=>$apititle, -style=>$apistyle);
+        print $q->start_html(-title=>$apititle);
         print $q->h1('Nothing has been matched or the arguments are invalid.');
         print $q->end_html;
     }
