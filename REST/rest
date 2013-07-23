@@ -48,7 +48,7 @@ sub POST($$) {
 
 sub PUT($$) {
     my ($path, $code) = @_;
-    return unless $q->request_method eq 'PUT';
+    return unless $q->request_method eq 'PUT' and $q->content_type eq 'application/json';
     return unless $q->path_info =~ $path;
     $code->();
     exit;
@@ -65,9 +65,9 @@ sub DELETE($$) {
 eval {
 
     # PUT subscribe a new user
-    POST qr{^/subscribe$} => sub {
+    PUT qr{^/subscribe$} => sub {
         print $q->header(-status=>200, -type=>'text/html');
-        my @keywords = $q->param( 'POSTDATA' );
+        my @keywords = $q->param( 'PUTDATA' );
         print "test \n\n";
         print @keywords;
         print "\n";
@@ -122,7 +122,7 @@ eval {
     };
 
     # GET infos about all subscriptions sorted by jid
-    GET qr{^/subscriptions/jid$} => sub {
+    GET qr{^/subscription/jid$} => sub {
         my $jids = $dbh->prepare( "SELECT jid FROM Subscribers ORDER BY jid ASC" );  
         $jids->execute();
 
@@ -152,7 +152,7 @@ eval {
     };
 
     # GET infos about all subscribed slugs of one particular user
-    GET qr{^/subscriptions/jid/([\w|\d|-]+@[\w|\d|-]+\.\w+)$} => sub {
+    GET qr{^/subscription/jid/([\w|\d|-]+@[\w|\d|-]+\.\w+)$} => sub {
         
         my $res = $dbh->selectall_arrayref( "SELECT slug FROM Subscriptions WHERE jid LIKE '$1' ORDER BY slug ASC" );  
         
@@ -174,7 +174,7 @@ eval {
 
 
     # GET infos about all subscriptions sorted by slug
-    GET qr{^/subscriptions/slug$} => sub {
+    GET qr{^/subscription/slug$} => sub {
         my $slugs = $dbh->prepare( "SELECT DISTINCT slug FROM Subscriptions ORDER BY slug ASC" );  
         $slugs->execute();
 
@@ -205,7 +205,7 @@ eval {
 
 
     # GET infos about all subscribed jids of one particular user
-    GET qr{^/subscriptions/slug/([\w|\d|-]+)$} => sub {
+    GET qr{^/subscription/slug/([\w|\d|-]+)$} => sub {
          
         my $res = $dbh->selectall_arrayref( "SELECT jid FROM Subscriptions WHERE slug LIKE '$1' ORDER BY jid ASC" );  
          
