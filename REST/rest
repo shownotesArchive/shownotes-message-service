@@ -81,76 +81,149 @@ eval {
         print $q->end_html();
     };
     
-    # GET infos about all subscribers
+    # GET infos about all subscribers over jid
     GET qr{^/subscriber$} => sub {
         
-        my $res = $dbh->selectall_arrayref( "SELECT * FROM Subscribers WHERE pad NOT NULL" );  
-         
+        my $res = $dbh->selectall_arrayref( "SELECT * FROM Subscribers ORDER BY jid ASC" );  
         if(@$res){
             print $q->header(-status=>200, -type=>'application/json');
-            print JSON->new->encode($res);
-        }  
+                        
+            my $out = "{"; 
+            foreach my $row (@$res) {
+                my($jid, $pad,$info) = @$row;
+                $out = $out."\"$jid\":{pad:\"$pad\", info:\"$info\"},";
+            }
+            chop($out); 
+            print $out."}";
+        }
         else {
             print $q->header(-status=>204, -type=>'text/html');
         }
     };
 
-
-    # GET infos about a particular subscriber
+ 
+    # GET infos about a particular subscriber over jid
     GET qr{^/subscriber/([\w|\d|-]+@[\w|\d|-]+\.\w+)$} => sub {
         
-        my $res = $dbh->selectall_arrayref( "SELECT pad,info FROM Subscribers WHERE jid LIKE '$1' AND pad not null" );  
+        my $res = $dbh->selectall_arrayref( "SELECT pad,info FROM Subscribers WHERE jid LIKE '$1'" );
         if(@$res){
             print $q->header(-status=>200, -type=>'application/json');
-            print JSON->new->encode($res);
+            
+            my $out = "{\"$1\":";        
+            foreach my $row (@$res) {
+                my($pad,$info) = @$row;
+                $out = $out."{pad:\"$pad\", info:\"$info\"}";
+            }
+            print $out."}";
         }  
         else {
             print $q->header(-status=>204, -type=>'text/html');
         }
     };
 
-    # GET infos about all subscriptions
-    GET qr{^/subscriptions$} => sub {
-        
-        my $res = $dbh->selectall_arrayref( "SELECT jid,slug FROM Subscriptions" );  
-        
-        if(@$res){
-            print $q->header(-status=>200, -type=>'application/json');
-            print JSON->new->encode($res);
-        }  
-        else {
-            print $q->header(-status=>204, -type=>'text/html');
-        }
-    };
+    # GET infos about all subscriptions sorted by jid
+    GET qr{^/subscriptions/jid$} => sub {
+        my $jids = $dbh->prepare( "SELECT jid FROM Subscribers ORDER BY jid ASC" );  
+        $jids->execute();
 
-    # GET infos about all subscriptions of one particular user
-    GET qr{^/subscriptions/id/([\w|\d|-]+@[\w|\d|-]+\.\w+)$} => sub {
-        
-        my $res = $dbh->selectall_arrayref( "SELECT slug FROM Subscriptions WHERE jid LIKE '$1'" );  
-        
-        if(@$res){
+        if(defined $jids){
             print $q->header(-status=>200, -type=>'application/json');
-            print JSON->new->encode($res);
-        }  
+            
+            my $out = "{";
+            while(my $jid = $jids->fetchrow_array()){
+                my $res = $dbh->selectall_arrayref( "SELECT slug FROM Subscriptions WHERE jid LIKE '$jid' ORDER BY slug ASC" );  
+                        
+                $out = $out."\"$jid\":{"; 
+                foreach my $row (@$res) {
+                    my($slug) = @$row;
+                    $out = $out."\"$slug\",";
+                }
+                chop($out);
+                $out = $out."},";
+            }       
+            chop($out); 
+            print $out."}";
+        }
         else {
             print $q->header(-status=>204, -type=>'text/html');
         }
+
+        $jids->finish();
     };
 
     # GET infos about all subscribed slugs of one particular user
-    GET qr{^/subscriptions/slug/([\w|\d|-]+)$} => sub {
-         
-        my $res = $dbh->selectall_arrayref( "SELECT jid FROM Subscriptions WHERE slug LIKE '$1'" );  
-         
+    GET qr{^/subscriptions/jid/([\w|\d|-]+@[\w|\d|-]+\.\w+)$} => sub {
+        
+        my $res = $dbh->selectall_arrayref( "SELECT slug FROM Subscriptions WHERE jid LIKE '$1' ORDER BY slug ASC" );  
+        
         if(@$res){
             print $q->header(-status=>200, -type=>'application/json');
-            print JSON->new->encode($res);
+
+            my $out = "{\"slugs\":{"; 
+            foreach my $row (@$res) {
+                my($slug) = @$row;
+                $out = $out."\"$slug\",";
+            }
+            chop($out); 
+            print $out."}}";
         }  
         else {
             print $q->header(-status=>204, -type=>'text/html');
         }
     };
 
+
+    # GET infos about all subscriptions sorted by slug
+    GET qr{^/subscriptions/slug$} => sub {
+        my $slugs = $dbh->prepare( "SELECT DISTINCT slug FROM Subscriptions ORDER BY slug ASC" );  
+        $slugs->execute();
+
+        if(defined $slugs){
+            print $q->header(-status=>200, -type=>'application/json');
+            
+            my $out = "{";
+            while(my $slug = $slugs->fetchrow_array()){
+                my $res = $dbh->selectall_arrayref( "SELECT jid FROM Subscriptions WHERE slug LIKE '$slug' ORDER BY jid ASC" );  
+                        
+                $out = $out."\"$slug\":{"; 
+                foreach my $row (@$res) {
+                    my($jid) = @$row;
+                    $out = $out."\"$jid\",";
+                }
+                chop($out);
+                $out = $out."},";
+            }       
+            chop($out); 
+            print $out."}";
+        }
+        else {
+            print $q->header(-status=>204, -type=>'text/html');
+        }
+
+        $slugs->finish();
+    };
+
+
+    # GET infos about all subscribed jids of one particular user
+    GET qr{^/subscriptions/slug/([\w|\d|-]+)$} => sub {
+         
+        my $res = $dbh->selectall_arrayref( "SELECT jid FROM Subscriptions WHERE slug LIKE '$1' ORDER BY jid ASC" );  
+         
+        if(@$res){
+            print $q->header(-status=>200, -type=>'application/json');
+
+            my $out = "{\"jids\":{"; 
+            foreach my $row (@$res) {
+                my($jid) = @$row;
+                $out = $out."\"$jid\",";
+            }
+            chop($out); 
+            print $out."}}";
+        }  
+        else {
+            print $q->header(-status=>204, -type=>'text/html');
+        }
+    };
 
     # Unmatched REST
     GET qr{^/(.+)?$} => sub {
