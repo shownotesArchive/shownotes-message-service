@@ -11,7 +11,7 @@
 
         AuthType Basic
         Authname "Shownotes Message Service"
-        AuthUserFile /path/to/rest-script/.htusers
+        AuthUserFile /path/to/.htusers
         AuthGroupFile /dev/null
 
         require valid-user

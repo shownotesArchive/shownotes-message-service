@@ -91,7 +91,7 @@ eval {
             my $out = "{"; 
             foreach my $row (@$res) {
                 my($jid, $pad,$info) = @$row;
-                $out = $out."\"$jid\":{pad:\"$pad\", info:\"$info\"},";
+                $out = $out."\"$jid\":{\"pad\":\"$pad\", \"info\":\"$info\"},";
             }
             chop($out); 
             print $out."}";
@@ -112,7 +112,7 @@ eval {
             my $out = "{\"$1\":";        
             foreach my $row (@$res) {
                 my($pad,$info) = @$row;
-                $out = $out."{pad:\"$pad\", info:\"$info\"}";
+                $out = $out."{\"pad\":\"$pad\", \"info\":\"$info\"}";
             }
             print $out."}";
         }  
@@ -133,13 +133,13 @@ eval {
             while(my $jid = $jids->fetchrow_array()){
                 my $res = $dbh->selectall_arrayref( "SELECT slug FROM Subscriptions WHERE jid LIKE '$jid' ORDER BY slug ASC" );  
                         
-                $out = $out."\"$jid\":{"; 
+                $out = $out."\"$jid\":["; 
                 foreach my $row (@$res) {
                     my($slug) = @$row;
                     $out = $out."\"$slug\",";
                 }
                 chop($out);
-                $out = $out."},";
+                $out = $out."],";
             }       
             chop($out); 
             print $out."}";
@@ -159,13 +159,13 @@ eval {
         if(@$res){
             print $q->header(-status=>200, -type=>'application/json');
 
-            my $out = "{\"slugs\":{"; 
+            my $out = "{\"slugs\":["; 
             foreach my $row (@$res) {
                 my($slug) = @$row;
                 $out = $out."\"$slug\",";
             }
             chop($out); 
-            print $out."}}";
+            print $out."]}";
         }  
         else {
             print $q->header(-status=>204, -type=>'text/html');
@@ -185,13 +185,13 @@ eval {
             while(my $slug = $slugs->fetchrow_array()){
                 my $res = $dbh->selectall_arrayref( "SELECT jid FROM Subscriptions WHERE slug LIKE '$slug' ORDER BY jid ASC" );  
                         
-                $out = $out."\"$slug\":{"; 
+                $out = $out."\"$slug\":["; 
                 foreach my $row (@$res) {
                     my($jid) = @$row;
                     $out = $out."\"$jid\",";
                 }
                 chop($out);
-                $out = $out."},";
+                $out = $out."],";
             }       
             chop($out); 
             print $out."}";
@@ -212,13 +212,13 @@ eval {
         if(@$res){
             print $q->header(-status=>200, -type=>'application/json');
 
-            my $out = "{\"jids\":{"; 
+            my $out = "{\"jids\":["; 
             foreach my $row (@$res) {
                 my($jid) = @$row;
                 $out = $out."\"$jid\",";
             }
             chop($out); 
-            print $out."}}";
+            print $out."]}";
         }  
         else {
             print $q->header(-status=>204, -type=>'text/html');
