@@ -86,7 +86,7 @@ sub message {
    
     # get account without ressource
     $jid =~ /(.+@.+\.\w+)\/.+/;
-    $account = $1;
+    $account = lc $1;
     
     print "Message from: ".$account."\n";
     print "        Body: ".$body."\n";
