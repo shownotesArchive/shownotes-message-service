@@ -67,6 +67,8 @@ eval {
     # PUT subscribe a new user
     PUT qr{^/subscribe$} => sub {
         
+        print $q->header(-status=>200, -type=>'text/html');
+
         # make a JSON parser object
         my $json = JSON::PP->new;
         
