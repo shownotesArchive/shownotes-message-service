@@ -10,7 +10,7 @@ use CGI::Carp qw( fatalsToBrowser );
 use Config::Simple;
 use DBI;
 
-use JSON;
+use JSON::PP;
 
 my $apititle = 'Shownotes Message Service REST-API';
 
@@ -66,11 +66,25 @@ eval {
 
     # PUT subscribe a new user
     PUT qr{^/subscribe$} => sub {
-        print $q->header(-status=>200, -type=>'text/html');
-        my @keywords = $q->param( 'PUTDATA' );
-        print "test \n\n";
-        print @keywords;
-        print "\n";
+        
+        # make a JSON parser object
+        my $json = JSON::PP->new;
+        
+        # get JSON via LWP and decode it to hash
+        my @rawdata = $q->param( 'PUTDATA' );
+        my $subscriber = $json->decode( @rawdata );
+
+        # catch crashes:
+        if($@){
+            print "[[JSON ERROR]] JSON parser crashed!\n\n $@\n";
+        }
+        
+        print $subscriber->{jid},"\n";
+        
+        my $liste = $subscriber->{slugs};
+        foreach my $x (@$liste) {
+            print $x,"\n";
+        }
     };
 
     # No arguments provided
