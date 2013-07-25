@@ -79,20 +79,25 @@ eval {
             print "[[JSON ERROR]] JSON parser crashed!\n\n $@\n";
         }
         
+        print $q->header(-status=>200, -type=>'text/html');
         print $subscriber->{jid},"\n";
         
         my $liste = $subscriber->{slugs};
         foreach my $x (@$liste) {
             print $x,"\n";
         }
+        
     };
 
     # No arguments provided
     GET qr{^$} => sub {
         print $q->header(-status=>200, -type=>'text/html');
-        print $q->start_html(-title=>$apititle);
-        print $q->h1('Nice documentation goes here.');
-        print $q->end_html();
+
+        open FILE,"<","../doc/api.html" or die $!;
+        
+        while (<FILE>) {
+            print $_;
+        }
     };
     
     # GET infos about all subscribers over jid
@@ -226,7 +231,7 @@ eval {
         if(@$res){
             print $q->header(-status=>200, -type=>'application/json');
 
-            my $out = "{\"jids\":["; 
+            my $out = "{\"$1\":["; 
             foreach my $row (@$res) {
                 my($jid) = @$row;
                 $out = $out."\"$jid\",";

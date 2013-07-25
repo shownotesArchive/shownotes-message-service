@@ -1,0 +1,182 @@
+<h1 id="api-description---shownotes-message-service">API description - Shownotes Message Service</h1>
+<h2 id="get-resources">GET Resources</h2>
+<h3 id="get-this-api-description">Get this API description</h3>
+<ul>
+<li>URI: http://example.org/rest</li>
+<li>Methode: GET</li>
+<li>Auth: BASIC</li>
+</ul>
+<h4 id="returns">Returns</h4>
+<p>This documentation</p>
+<h3 id="get-all-subscribers-with-full-information">Get all subscribers with full information</h3>
+<ul>
+<li>URI: http://example.org/rest/subscriber</li>
+<li>Methode: GET</li>
+<li>Auth: BASIC</li>
+</ul>
+<h4 id="returns-1">Returns</h4>
+<p>HTTP Status: 200 OK</p>
+<p>Content-Type: application/JSON</p>
+<p>Data:</p>
+<pre><code>{
+    &quot;anon@example.org&quot;:{
+                            &quot;pad&quot;:&quot;&quot;,
+                            &quot;info&quot;:&quot;1&quot;
+                        },
+    &quot;anon2@example.org&quot;:{
+                            &quot;pad&quot;:&quot;anon&quot;,
+                            &quot;info&quot;:&quot;0&quot;
+                        }
+}</code></pre>
+<p>or, if there is no subscriber at all</p>
+<p>HTTP Status: 204 No Content</p>
+<p>Content-Type: text/html</p>
+<p>Data: -</p>
+<h3 id="get-a-specific-subscriber-by-jid-with-full-information">Get a specific subscriber by jid with full information</h3>
+<ul>
+<li>URI: http://example.org/rest/subscriber</li>
+<li>Methode: GET</li>
+<li>Auth: BASIC</li>
+</ul>
+<h4 id="returns-2">Returns</h4>
+<p>HTTP Status: 200 OK</p>
+<p>Content-Type: application/JSON</p>
+<p>Data:</p>
+<pre><code>{
+    &quot;anon@example.org&quot;:{
+                            &quot;pad&quot;:&quot;&quot;,
+                            &quot;info&quot;:&quot;1&quot;
+                        },
+}</code></pre>
+<p>or, if no entry</p>
+<p>HTTP Status: 204 No Content</p>
+<p>Content-Type: text/html</p>
+<p>Data: -</p>
+<h3 id="get-all-subscriptions-ordered-by-jid">Get all subscriptions ordered by jid</h3>
+<ul>
+<li>URI: http://example.org/rest/subscription/jid</li>
+<li>Methode: GET</li>
+<li>Auth: BASIC</li>
+</ul>
+<h4 id="returns-3">Returns</h4>
+<p>HTTP Status: 200 OK</p>
+<p>Content-Type: application/JSON</p>
+<p>Data:</p>
+<pre><code>{
+    &quot;anon@example.org&quot;:[    
+                            &quot;1337kultur&quot;,
+                            &quot;alternativlos&quot;,
+                            &quot;binaergewitter&quot;,
+                            &quot;chaosradio&quot;,
+                            &quot;einschlafen&quot;
+                        ],
+    &quot;anon2@example.org&quot;:[     
+                            &quot;aboutradio&quot;,
+                            &quot;binaergewitter&quot;,
+                            &quot;bluemoon&quot;,
+                            &quot;breitband&quot;,
+                            &quot;cre&quot;
+                        ]
+}</code></pre>
+<p>or, if there is no entry</p>
+<p>HTTP Status: 204 No Content</p>
+<p>Content-Type: text/html</p>
+<p>Data: -</p>
+<h3 id="get-all-subscriptions-for-a-specific-jid">Get all subscriptions for a specific jid</h3>
+<ul>
+<li>URI: http://example.org/rest/subscription/jid/{jid}</li>
+<li>Methode: GET</li>
+<li>Auth: BASIC</li>
+</ul>
+<h4 id="returns-4">Returns</h4>
+<p>HTTP Status: 200 OK</p>
+<p>Content-Type: application/JSON</p>
+<p>Data:</p>
+<pre><code>{
+    &quot;anon@example.org&quot;:[    
+                            &quot;1337kultur&quot;,
+                            &quot;alternativlos&quot;,
+                            &quot;binaergewitter&quot;,
+                            &quot;chaosradio&quot;,
+                            &quot;einschlafen&quot;
+                        ]
+}</code></pre>
+<p>or, if there is no entry</p>
+<p>HTTP Status: 204 No Content</p>
+<p>Content-Type: text/html</p>
+<p>Data: -</p>
+<h3 id="get-all-subscribed-jids-ordered-by-slugs">Get all subscribed jids ordered by slugs</h3>
+<ul>
+<li>URI: http://example.org/rest/subscription/slug</li>
+<li>Methode: GET</li>
+<li>Auth: BASIC</li>
+</ul>
+<h4 id="returns-5">Returns</h4>
+<p>HTTP Status: 200 OK</p>
+<p>Content-Type: application/JSON</p>
+<p>Data:</p>
+<pre><code>{
+    &quot;1337kultur&quot;:[
+                    &quot;anon2@example.org&quot;
+                 ],
+    &quot;aboutradio&quot;:[
+                    &quot;anon@example.org&quot;
+                 ],
+    &quot;alternativlos&quot;:[
+                        &quot;anon@example.org&quot;,
+                        &quot;anon2@example.org&quot;
+                    ]
+}</code></pre>
+<p>or, if there is no entry</p>
+<p>HTTP Status: 204 No Content</p>
+<p>Content-Type: text/html</p>
+<p>Data: -</p>
+<h3 id="get-all-subscribed-jids-from-a-specifc-slug">Get all subscribed jids from a specifc slug</h3>
+<h4 id="returns-6">Returns</h4>
+<ul>
+<li>URI: http://example.org/rest/subscription/slug/{slug}</li>
+<li>Methode: GET</li>
+<li>Auth: BASIC</li>
+</ul>
+<p>HTTP Status: 200 OK</p>
+<p>Content-Type: application/JSON</p>
+<p>Data:</p>
+<pre><code>{
+    &quot;einschlafen&quot;:[
+                        &quot;anon@example.org&quot;,
+                        &quot;anon2@example.org&quot;
+                  ]
+}</code></pre>
+<p>or, if there is no entry</p>
+<p>HTTP Status: 204 No Content</p>
+<p>Content-Type: text/html</p>
+<p>Data: -</p>
+<h2 id="put-resources">PUT Resources</h2>
+<h3 id="subscribe-a-user-to-one-ore-more-slugs-by-jid">Subscribe a user to one ore more slugs by jid</h3>
+<ul>
+<li>URI: http://example.org/rest/subscribe</li>
+<li>Methode: PUT</li>
+<li>Auth: BASIC</li>
+<li>Content-Type: application/json</li>
+</ul>
+<p>Data:</p>
+<pre><code>{
+    &quot;einschlafen&quot;:[
+                        &quot;anon@example.org&quot;,
+                        &quot;anon2@example.org&quot;
+                  ]
+}</code></pre>
+<h3 id="returns-7">Returns</h3>
+<p>HTTP Status: 200 OK</p>
+<p>Content-Type: text/html</p>
+<p>Data:</p>
+<p>or, if there is no entry for one or more slugs</p>
+<p>HTTP Status: ????</p>
+<p>Content-Type: application/json</p>
+<p>Data:</p>
+<pre><code>{
+    &quot;erroron&quot;:[
+                  &quot;foo&quot;,
+                  &quot;barz&quot;
+              ]
+}</code></pre>
