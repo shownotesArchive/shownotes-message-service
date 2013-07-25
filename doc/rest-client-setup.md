@@ -1,5 +1,7 @@
 # Additional setup - REST client
 
+You will find a full API description here: [api.md](api.md "api.md")
+
 ## Special requirements
 * Apache with mod_cgi and mod_auth_basic
 

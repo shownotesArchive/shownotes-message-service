@@ -2,5 +2,4 @@
 *.db
 sms.config
 *.db
-doc/
 .htusers
