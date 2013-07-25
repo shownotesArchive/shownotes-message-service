@@ -26,16 +26,16 @@ Content-Type: application/JSON
 
 Data:
 
-```
+```JSON
 {
     "anon@example.org":{
-                            "pad":"",
-                            "info":"1"
-                        },
+        "pad":"",
+        "info":1
+    },
     "anon2@example.org":{
-                            "pad":"anon",
-                            "info":"0"
-                        }
+        "pad":"anon",
+        "info":0
+    }
 }
 ```
 
@@ -50,7 +50,7 @@ Data: -
 
 ### Get a specific subscriber by jid with full information
 
-* URI: http://example.org/rest/subscriber
+* URI: http://example.org/rest/subscriber/{jid}
 * Methode: GET
 * Auth: BASIC
 
@@ -62,12 +62,12 @@ Content-Type: application/JSON
 
 Data:
 
-```
+```JSON
 {
     "anon@example.org":{
-                            "pad":"",
-                            "info":"1"
-                        },
+        "pad":"",
+        "info":1
+    }
 }
 ```
 
@@ -93,22 +93,22 @@ Content-Type: application/JSON
 
 Data:
 
-```
+```JSON
 {
     "anon@example.org":[    
-                            "1337kultur",
-                            "alternativlos",
-                            "binaergewitter",
-                            "chaosradio",
-                            "einschlafen"
-                        ],
+        "1337kultur",
+        "alternativlos",       
+        "binaergewitter",
+        "chaosradio",
+        "einschlafen"
+    ],
     "anon2@example.org":[     
-                            "aboutradio",
-                            "binaergewitter",
-                            "bluemoon",
-                            "breitband",
-                            "cre"
-                        ]
+        "aboutradio",
+        "binaergewitter",
+        "bluemoon",
+        "breitband",
+        "cre"
+    ]
 }
 ```
 
@@ -134,15 +134,15 @@ Content-Type: application/JSON
 
 Data:
 
-```
+```JSON
 {
     "anon@example.org":[    
-                            "1337kultur",
-                            "alternativlos",
-                            "binaergewitter",
-                            "chaosradio",
-                            "einschlafen"
-                        ]
+        "1337kultur",
+        "alternativlos",
+        "binaergewitter",
+        "chaosradio",
+        "einschlafen"
+    ]
 }
 ```
 
@@ -168,18 +168,18 @@ Content-Type: application/JSON
 
 Data:
 
-```
+```JSON
 {
     "1337kultur":[
-                    "anon2@example.org"
-                 ],
+        "anon2@example.org"
+    ],
     "aboutradio":[
-                    "anon@example.org"
-                 ],
+        "anon@example.org"
+    ],
     "alternativlos":[
-                        "anon@example.org",
-                        "anon2@example.org"
-                    ]
+        "anon@example.org",
+        "anon2@example.org"
+    ]
 }
 ```
 
@@ -205,12 +205,12 @@ Content-Type: application/JSON
 
 Data:
 
-```
+```JSON
 {
     "einschlafen":[
-                        "anon@example.org",
-                        "anon2@example.org"
-                  ]
+        "anon@example.org",
+        "anon2@example.org"
+    ]
 }
 ```
 
@@ -222,23 +222,67 @@ Content-Type: text/html
 
 Data: -
 
-## PUT Resources
+# TODO
 
-### Subscribe a user to one ore more slugs by jid
+### PUT register - challenge
 
-* URI: http://example.org/rest/subscribe
-* Methode: PUT
+### PUT token
+
+### Get all slugs
+
+#### Returns
+
+* URI: http://example.org/rest/slug
+* Methode: GET
+* Auth: BASIC
+
+HTTP Status: 200 OK
+
+Content-Type: application/JSON
+
+Data:
+
+```JSON
+{
+    "slugs":{
+        "wrint":{
+            "subscriptions":1337,
+            "title":"Wrint"
+        },
+        "cre":{
+            "subscriptions":23,
+            "title":"CRE"
+        }
+        ...
+    }
+}
+```
+
+or, if there is no entry
+
+HTTP Status: 204 No Content
+
+Content-Type: text/html
+
+Data: -
+
+## POST Resources
+
+### Subscribe or unsubscribe a user to one ore more slugs by jid
+
+* URI: http://example.org/rest/subscription
+* Methode: POST
 * Auth: BASIC
 * Content-Type: application/json
 
 Data:
 
-```
+```JSON
 {
-    "einschlafen":[
-                        "anon@example.org",
-                        "anon2@example.org"
-                  ]
+    "anon@example.org":[
+        "einschlafen",
+        "nsfw"
+    ]
 }
 ```
 
@@ -246,24 +290,31 @@ Data:
 
 HTTP Status: 200 OK
 
-Content-Type: text/html
+Content-Type: application/json
 
 Data: 
 
+```JSON
+{
+    "success":true,
+    "erroron":[
+    ]
+}
+```
+
 or, if there is no entry for one or more slugs
 
-HTTP Status: ????
+HTTP Status: 409 Conflict
 
 Content-Type: application/json
 
 Data:
 
-```
+```JSON
 {
+    "success":false,
     "erroron":[
-                  "foo",
-                  "barz"
-              ]
+        "nsfw"
+    ]
 }
 ```
-

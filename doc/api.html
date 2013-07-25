@@ -1,3 +1,32 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <meta http-equiv="Content-Style-Type" content="text/css" />
+  <meta name="generator" content="pandoc" />
+  <title></title>
+  <style type="text/css">code{white-space: pre;}</style>
+  <style type="text/css">
+table.sourceCode, tr.sourceCode, td.lineNumbers, td.sourceCode {
+  margin: 0; padding: 0; vertical-align: baseline; border: none; }
+table.sourceCode { width: 100%; line-height: 100%; }
+td.lineNumbers { text-align: right; padding-right: 4px; padding-left: 4px; color: #aaaaaa; border-right: 1px solid #aaaaaa; }
+td.sourceCode { padding-left: 5px; }
+code > span.kw { color: #007020; font-weight: bold; }
+code > span.dt { color: #902000; }
+code > span.dv { color: #40a070; }
+code > span.bn { color: #40a070; }
+code > span.fl { color: #40a070; }
+code > span.ch { color: #4070a0; }
+code > span.st { color: #4070a0; }
+code > span.co { color: #60a0b0; font-style: italic; }
+code > span.ot { color: #007020; }
+code > span.al { color: #ff0000; font-weight: bold; }
+code > span.fu { color: #06287e; }
+code > span.er { color: #ff0000; font-weight: bold; }
+  </style>
+</head>
+<body>
 <h1 id="api-description---shownotes-message-service">API description - Shownotes Message Service</h1>
 <h2 id="get-resources">GET Resources</h2>
 <h3 id="get-this-api-description">Get this API description</h3>
@@ -18,15 +47,15 @@
 <p>HTTP Status: 200 OK</p>
 <p>Content-Type: application/JSON</p>
 <p>Data:</p>
-<pre><code>{
-    &quot;anon@example.org&quot;:{
-                            &quot;pad&quot;:&quot;&quot;,
-                            &quot;info&quot;:&quot;1&quot;
-                        },
-    &quot;anon2@example.org&quot;:{
-                            &quot;pad&quot;:&quot;anon&quot;,
-                            &quot;info&quot;:&quot;0&quot;
-                        }
+<pre class="sourceCode JSON"><code class="sourceCode json">{
+    <span class="dt">&quot;anon@example.org&quot;</span>:{
+        <span class="dt">&quot;pad&quot;</span>:<span class="st">&quot;&quot;</span>,
+        <span class="dt">&quot;info&quot;</span>:<span class="dv">1</span>
+    },
+    <span class="dt">&quot;anon2@example.org&quot;</span>:{
+        <span class="dt">&quot;pad&quot;</span>:<span class="st">&quot;anon&quot;</span>,
+        <span class="dt">&quot;info&quot;</span>:<span class="dv">0</span>
+    }
 }</code></pre>
 <p>or, if there is no subscriber at all</p>
 <p>HTTP Status: 204 No Content</p>
@@ -34,7 +63,7 @@
 <p>Data: -</p>
 <h3 id="get-a-specific-subscriber-by-jid-with-full-information">Get a specific subscriber by jid with full information</h3>
 <ul>
-<li>URI: http://example.org/rest/subscriber</li>
+<li>URI: http://example.org/rest/subscriber/{jid}</li>
 <li>Methode: GET</li>
 <li>Auth: BASIC</li>
 </ul>
@@ -42,11 +71,11 @@
 <p>HTTP Status: 200 OK</p>
 <p>Content-Type: application/JSON</p>
 <p>Data:</p>
-<pre><code>{
-    &quot;anon@example.org&quot;:{
-                            &quot;pad&quot;:&quot;&quot;,
-                            &quot;info&quot;:&quot;1&quot;
-                        },
+<pre class="sourceCode JSON"><code class="sourceCode json">{
+    <span class="dt">&quot;anon@example.org&quot;</span>:{
+        <span class="dt">&quot;pad&quot;</span>:<span class="st">&quot;&quot;</span>,
+        <span class="dt">&quot;info&quot;</span>:<span class="dv">1</span>
+    }
 }</code></pre>
 <p>or, if no entry</p>
 <p>HTTP Status: 204 No Content</p>
@@ -62,21 +91,21 @@
 <p>HTTP Status: 200 OK</p>
 <p>Content-Type: application/JSON</p>
 <p>Data:</p>
-<pre><code>{
-    &quot;anon@example.org&quot;:[    
-                            &quot;1337kultur&quot;,
-                            &quot;alternativlos&quot;,
-                            &quot;binaergewitter&quot;,
-                            &quot;chaosradio&quot;,
-                            &quot;einschlafen&quot;
-                        ],
-    &quot;anon2@example.org&quot;:[     
-                            &quot;aboutradio&quot;,
-                            &quot;binaergewitter&quot;,
-                            &quot;bluemoon&quot;,
-                            &quot;breitband&quot;,
-                            &quot;cre&quot;
-                        ]
+<pre class="sourceCode JSON"><code class="sourceCode json">{
+    <span class="dt">&quot;anon@example.org&quot;</span>:[    
+        <span class="st">&quot;1337kultur&quot;</span>,
+        <span class="st">&quot;alternativlos&quot;</span>,       
+        <span class="st">&quot;binaergewitter&quot;</span>,
+        <span class="st">&quot;chaosradio&quot;</span>,
+        <span class="st">&quot;einschlafen&quot;</span>
+    ],
+    <span class="dt">&quot;anon2@example.org&quot;</span>:[     
+        <span class="st">&quot;aboutradio&quot;</span>,
+        <span class="st">&quot;binaergewitter&quot;</span>,
+        <span class="st">&quot;bluemoon&quot;</span>,
+        <span class="st">&quot;breitband&quot;</span>,
+        <span class="st">&quot;cre&quot;</span>
+    ]
 }</code></pre>
 <p>or, if there is no entry</p>
 <p>HTTP Status: 204 No Content</p>
@@ -92,14 +121,14 @@
 <p>HTTP Status: 200 OK</p>
 <p>Content-Type: application/JSON</p>
 <p>Data:</p>
-<pre><code>{
-    &quot;anon@example.org&quot;:[    
-                            &quot;1337kultur&quot;,
-                            &quot;alternativlos&quot;,
-                            &quot;binaergewitter&quot;,
-                            &quot;chaosradio&quot;,
-                            &quot;einschlafen&quot;
-                        ]
+<pre class="sourceCode JSON"><code class="sourceCode json">{
+    <span class="dt">&quot;anon@example.org&quot;</span>:[    
+        <span class="st">&quot;1337kultur&quot;</span>,
+        <span class="st">&quot;alternativlos&quot;</span>,
+        <span class="st">&quot;binaergewitter&quot;</span>,
+        <span class="st">&quot;chaosradio&quot;</span>,
+        <span class="st">&quot;einschlafen&quot;</span>
+    ]
 }</code></pre>
 <p>or, if there is no entry</p>
 <p>HTTP Status: 204 No Content</p>
@@ -115,17 +144,17 @@
 <p>HTTP Status: 200 OK</p>
 <p>Content-Type: application/JSON</p>
 <p>Data:</p>
-<pre><code>{
-    &quot;1337kultur&quot;:[
-                    &quot;anon2@example.org&quot;
-                 ],
-    &quot;aboutradio&quot;:[
-                    &quot;anon@example.org&quot;
-                 ],
-    &quot;alternativlos&quot;:[
-                        &quot;anon@example.org&quot;,
-                        &quot;anon2@example.org&quot;
-                    ]
+<pre class="sourceCode JSON"><code class="sourceCode json">{
+    <span class="dt">&quot;1337kultur&quot;</span>:[
+        <span class="st">&quot;anon2@example.org&quot;</span>
+    ],
+    <span class="dt">&quot;aboutradio&quot;</span>:[
+        <span class="st">&quot;anon@example.org&quot;</span>
+    ],
+    <span class="dt">&quot;alternativlos&quot;</span>:[
+        <span class="st">&quot;anon@example.org&quot;</span>,
+        <span class="st">&quot;anon2@example.org&quot;</span>
+    ]
 }</code></pre>
 <p>or, if there is no entry</p>
 <p>HTTP Status: 204 No Content</p>
@@ -141,42 +170,79 @@
 <p>HTTP Status: 200 OK</p>
 <p>Content-Type: application/JSON</p>
 <p>Data:</p>
-<pre><code>{
-    &quot;einschlafen&quot;:[
-                        &quot;anon@example.org&quot;,
-                        &quot;anon2@example.org&quot;
-                  ]
+<pre class="sourceCode JSON"><code class="sourceCode json">{
+    <span class="dt">&quot;einschlafen&quot;</span>:[
+        <span class="st">&quot;anon@example.org&quot;</span>,
+        <span class="st">&quot;anon2@example.org&quot;</span>
+    ]
 }</code></pre>
 <p>or, if there is no entry</p>
 <p>HTTP Status: 204 No Content</p>
 <p>Content-Type: text/html</p>
 <p>Data: -</p>
-<h2 id="put-resources">PUT Resources</h2>
-<h3 id="subscribe-a-user-to-one-ore-more-slugs-by-jid">Subscribe a user to one ore more slugs by jid</h3>
+<h1 id="todo">TODO</h1>
+<h3 id="put-register---challenge">PUT register - challenge</h3>
+<h3 id="put-token">PUT token</h3>
+<h3 id="get-all-slugs">Get all slugs</h3>
+<h4 id="returns-7">Returns</h4>
 <ul>
-<li>URI: http://example.org/rest/subscribe</li>
-<li>Methode: PUT</li>
+<li>URI: http://example.org/rest/slug</li>
+<li>Methode: GET</li>
+<li>Auth: BASIC</li>
+</ul>
+<p>HTTP Status: 200 OK</p>
+<p>Content-Type: application/JSON</p>
+<p>Data:</p>
+<pre class="sourceCode JSON"><code class="sourceCode json">{
+    <span class="dt">&quot;slugs&quot;</span>:{
+        <span class="dt">&quot;wrint&quot;</span>:{
+            <span class="dt">&quot;subscriptions&quot;</span>:<span class="dv">1337</span>,
+            <span class="dt">&quot;title&quot;</span>:<span class="st">&quot;Wrint&quot;</span>
+        },
+        <span class="dt">&quot;cre&quot;</span>:{
+            <span class="dt">&quot;subscriptions&quot;</span>:<span class="dv">23</span>,
+            <span class="dt">&quot;title&quot;</span>:<span class="st">&quot;CRE&quot;</span>
+        }
+        <span class="er">...</span>
+    }
+}</code></pre>
+<p>or, if there is no entry</p>
+<p>HTTP Status: 204 No Content</p>
+<p>Content-Type: text/html</p>
+<p>Data: -</p>
+<h2 id="post-resources">POST Resources</h2>
+<h3 id="subscribe-or-unsubscribe-a-user-to-one-ore-more-slugs-by-jid">Subscribe or unsubscribe a user to one ore more slugs by jid</h3>
+<ul>
+<li>URI: http://example.org/rest/subscription</li>
+<li>Methode: POST</li>
 <li>Auth: BASIC</li>
 <li>Content-Type: application/json</li>
 </ul>
 <p>Data:</p>
-<pre><code>{
-    &quot;einschlafen&quot;:[
-                        &quot;anon@example.org&quot;,
-                        &quot;anon2@example.org&quot;
-                  ]
+<pre class="sourceCode JSON"><code class="sourceCode json">{
+    <span class="dt">&quot;anon@example.org&quot;</span>:[
+        <span class="st">&quot;einschlafen&quot;</span>,
+        <span class="st">&quot;nsfw&quot;</span>
+    ]
 }</code></pre>
-<h3 id="returns-7">Returns</h3>
+<h3 id="returns-8">Returns</h3>
 <p>HTTP Status: 200 OK</p>
-<p>Content-Type: text/html</p>
-<p>Data:</p>
-<p>or, if there is no entry for one or more slugs</p>
-<p>HTTP Status: ????</p>
 <p>Content-Type: application/json</p>
 <p>Data:</p>
-<pre><code>{
-    &quot;erroron&quot;:[
-                  &quot;foo&quot;,
-                  &quot;barz&quot;
-              ]
+<pre class="sourceCode JSON"><code class="sourceCode json">{
+    <span class="dt">&quot;success&quot;</span>:<span class="dv">true</span>,
+    <span class="dt">&quot;erroron&quot;</span>:[
+    ]
 }</code></pre>
+<p>or, if there is no entry for one or more slugs</p>
+<p>HTTP Status: 409 Conflict</p>
+<p>Content-Type: application/json</p>
+<p>Data:</p>
+<pre class="sourceCode JSON"><code class="sourceCode json">{
+    <span class="dt">&quot;success&quot;</span>:<span class="dv">false</span>,
+    <span class="dt">&quot;erroron&quot;</span>:[
+        <span class="st">&quot;nsfw&quot;</span>
+    ]
+}</code></pre>
+</body>
+</html>
