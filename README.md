@@ -6,7 +6,7 @@ A simple jabber notification service for live podcasts. Based upon the data of [
 **Give it a try** but beware the service is under heavy development. :) 
 
 <pre>
-sms@fastreboot.de
+bot@jabber.shownot.es
 </pre>
 
 # Available commands
