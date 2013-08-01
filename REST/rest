@@ -67,7 +67,7 @@ eval {
     # PUT subscribe a new user
     PUT qr{^/subscribe$} => sub {
         
-        print $q->header(-status=>200, -type=>'text/html');
+        print $q->header(-status=>200, -type=>'text/html; charset=UTF-8');
 
         # make a JSON parser object
         my $json = JSON::PP->new;
@@ -81,7 +81,7 @@ eval {
             print "[[JSON ERROR]] JSON parser crashed!\n\n $@\n";
         }
         
-        print $q->header(-status=>200, -type=>'text/html');
+        print $q->header(-status=>200, -type=>'text/html; charset=UTF-8');
         print $subscriber->{jid},"\n";
         
         my $liste = $subscriber->{slugs};
@@ -93,7 +93,7 @@ eval {
 
     # No arguments provided
     GET qr{^$} => sub {
-        print $q->header(-status=>200, -type=>'text/html');
+        print $q->header(-status=>200, -type=>'text/html; charset=UTF-8');
 
         open FILE,"<","../doc/api.html" or die $!;
         
@@ -107,7 +107,7 @@ eval {
         
         my $res = $dbh->selectall_arrayref( "SELECT * FROM Subscribers ORDER BY jid ASC" );  
         if(@$res){
-            print $q->header(-status=>200, -type=>'application/json');
+            print $q->header(-status=>200, -type=>'application/json; charset=UTF-8');
                         
             my $out = "{"; 
             foreach my $row (@$res) {
@@ -118,7 +118,7 @@ eval {
             print $out."}";
         }
         else {
-            print $q->header(-status=>204, -type=>'text/html');
+            print $q->header(-status=>204, -type=>'text/html; charset=UTF-8');
         }
     };
 
@@ -128,7 +128,7 @@ eval {
         
         my $res = $dbh->selectall_arrayref( "SELECT pad,info FROM Subscribers WHERE jid LIKE '$1'" );
         if(@$res){
-            print $q->header(-status=>200, -type=>'application/json');
+            print $q->header(-status=>200, -type=>'application/json; charset=UTF-8');
             
             my $out = "{\"$1\":";        
             foreach my $row (@$res) {
@@ -138,7 +138,7 @@ eval {
             print $out."}";
         }  
         else {
-            print $q->header(-status=>204, -type=>'text/html');
+            print $q->header(-status=>204, -type=>'text/html; charset=UTF-8');
         }
     };
 
@@ -148,7 +148,7 @@ eval {
         $jids->execute();
 
         if(defined $jids){
-            print $q->header(-status=>200, -type=>'application/json');
+            print $q->header(-status=>200, -type=>'application/json; charset=UTF-8');
             
             my $out = "{";
             while(my $jid = $jids->fetchrow_array()){
@@ -166,19 +166,20 @@ eval {
             print $out."}";
         }
         else {
-            print $q->header(-status=>204, -type=>'text/html');
+            print $q->header(-status=>204, -type=>'text/html; charset=UTF-8');
         }
 
         $jids->finish();
     };
 
     # GET infos about all subscribed slugs of one particular user
-    GET qr{^/subscription/jid/([\w|\d|-]+@[\w|\d|-]+\.\w+)$} => sub {
+    GET qr{^/subscription/jid/(([\w|\d|-]+\.)+[\w|\d|-]+@([\w|\d|-]+\.)+[\w|\d|-]+\.\w+)$} => sub {
         
-        my $res = $dbh->selectall_arrayref( "SELECT slug FROM Subscriptions WHERE jid LIKE '$1' ORDER BY slug ASC" );  
+        my $jid = lc $1;
+        my $res = $dbh->selectall_arrayref( "SELECT slug FROM Subscriptions WHERE jid LIKE '$jid' ORDER BY slug ASC" );  
         
         if(@$res){
-            print $q->header(-status=>200, -type=>'application/json');
+            print $q->header(-status=>200, -type=>'application/json; charset=UTF-8');
 
             my $out = "{\"slugs\":["; 
             foreach my $row (@$res) {
@@ -189,7 +190,7 @@ eval {
             print $out."]}";
         }  
         else {
-            print $q->header(-status=>204, -type=>'text/html');
+            print $q->header(-status=>204, -type=>'text/html; charset=UTF-8');
         }
     };
 
@@ -200,7 +201,7 @@ eval {
         $slugs->execute();
 
         if(defined $slugs){
-            print $q->header(-status=>200, -type=>'application/json');
+            print $q->header(-status=>200, -type=>'application/json; charset=UTF-8');
             
             my $out = "{";
             while(my $slug = $slugs->fetchrow_array()){
@@ -218,7 +219,7 @@ eval {
             print $out."}";
         }
         else {
-            print $q->header(-status=>204, -type=>'text/html');
+            print $q->header(-status=>204, -type=>'text/html; charset=UTF-8');
         }
 
         $slugs->finish();
@@ -231,7 +232,7 @@ eval {
         my $res = $dbh->selectall_arrayref( "SELECT jid FROM Subscriptions WHERE slug LIKE '$1' ORDER BY jid ASC" );  
          
         if(@$res){
-            print $q->header(-status=>200, -type=>'application/json');
+            print $q->header(-status=>200, -type=>'application/json; charset=UTF-8');
 
             my $out = "{\"$1\":["; 
             foreach my $row (@$res) {
@@ -242,14 +243,14 @@ eval {
             print $out."]}";
         }  
         else {
-            print $q->header(-status=>204, -type=>'text/html');
+            print $q->header(-status=>204, -type=>'text/html; charset=UTF-8');
         }
     };
 
     # Unmatched REST
     GET qr{^/(.+)?$} => sub {
         # Nothing handles this, throw back a standard 404
-        print $q->header(-status=>404, -type=>'text/html');
+        print $q->header(-status=>404, -type=>'text/html; charset=UTF-8');
         print $q->start_html(-title=>$apititle);
         print $q->h1('Nothing has been matched or the arguments are invalid.');
         print $q->end_html;
@@ -262,7 +263,7 @@ if ($@) {
     # Handle errors
     if (ref $@ and reftype $@ eq 'HASH') {
         my $ERROR = $@;
-        print $q->header(-status=>$ERROR->{status}, -type=>'text/html');
+        print $q->header(-status=>$ERROR->{status}, -type=>'text/html; charset=UTF-8');
         print $q->h1($ERROR->{title});
         print $q->p($ERROR->{message}) if $ERROR->{message};
         print $q->end_html;
@@ -271,7 +272,7 @@ if ($@) {
     # Handle anything else
     else {
         # Nothing handles this, throw back a standard 404
-        print $q->header(-status=>404, -type=>'text/html');
+        print $q->header(-status=>404, -type=>'text/html; charset=UTF-8');
         print $q->start_html(-title=>$apititle);
         print $q->h1('Nothing has been matched or the arguments are invalid.');
         print $q->end_html;
