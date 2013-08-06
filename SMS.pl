@@ -88,6 +88,8 @@ sub message {
     $jid =~ /(.+@.+\.\w+)\/.+/;
     $account = lc $1;
     
+    print "\n";
+    print "    Event at: ".localtime(time).":\n";
     print "Message from: ".$account."\n";
     print "        Body: ".$body."\n";
 
@@ -105,7 +107,7 @@ sub message {
         unregister($1);
     }
     elsif($body eq ''){
-        print "--- fail\n";
+        print "Empty Body\n";
         # do nothing... 
         # workaround for empty message bodys
     }
