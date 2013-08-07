@@ -10,7 +10,7 @@ use CGI::Carp qw( fatalsToBrowser );
 use Config::Simple;
 use DBI;
 
-use JSON::PP;
+use JSON;
 
 my $apititle = 'Shownotes Message Service REST-API';
 
@@ -65,30 +65,22 @@ sub DELETE($$) {
 eval {
 
     # PUT subscribe a new user
-    PUT qr{^/subscribe$} => sub {
-        
-        print $q->header(-status=>200, -type=>'text/html; charset=UTF-8');
+    POST qr{^/subscribe$} => sub {
+        # get JSON and decode it to hash
+        my @rawdata = $q->param( 'POSTDATA' );
+        my $subscribers = JSON->new->utf8(1)->decode(@rawdata);
 
-        # make a JSON parser object
-        my $json = JSON::PP->new;
-        
-        # get JSON via LWP and decode it to hash
-        my @rawdata = $q->param( 'PUTDATA' );
-        my $subscriber = $json->decode( @rawdata );
-
-        # catch crashes:
-        if($@){
-            print "[[JSON ERROR]] JSON parser crashed!\n\n $@\n";
-        }
-        
         print $q->header(-status=>200, -type=>'text/html; charset=UTF-8');
-        print $subscriber->{jid},"\n";
         
-        my $liste = $subscriber->{slugs};
-        foreach my $x (@$liste) {
-            print $x,"\n";
+        foreach my $subscriber (keys %$subscribers) {
+            print $subscriber."\n";
+
+            foreach my $slugs ($subscribers->{$subscriber}) {
+                foreach my $podslug (@$slugs) {
+                    print "  ".$podslug."\n";
+                }
+            }
         }
-        
     };
 
     # No arguments provided
