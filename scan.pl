@@ -37,18 +37,31 @@ my $json = JSON->new->allow_nonref;
 
 # get JSON via LWP and decode it to hash
 my $rawdata = get("http://hoersuppe.de/api/?action=getPodcasts");
-my $podcasts = $json->decode( $rawdata );
+my $podcast_data = $json->decode( $rawdata );
 
-my $my = $podcasts->{"data"};
+my $podcasts = $podcast_data->{"data"};
 
 # insert Podcasts in DB
-foreach my $podcast (@$my){
+foreach my $podcast (@$podcasts){
     my $podtitle = $podcast->{"title"};
     my $podslug = $podcast->{"slug"};
+    
+    my $sth = $dbh->prepare("SELECT Slug FROM Podcasts WHERE slug LIKE \'$podslug\'");
+    $sth->execute();
+          
+    if(defined $sth->fetchrow_array()){
+        print "\t- Podcast ".$podslug." is in database\n";
+    }
+    else{
+        my $rawdata_info = get("http://hoersuppe.de/api/?action=getPodcastData&podcast=$podslug");
+        my $podcast_info = $json->decode( $rawdata_info );
         
-    $dbh->do("INSERT OR IGNORE INTO Podcasts VALUES('$podslug','$podtitle')");
-
-    print "\t--> Podcast ".$podslug." created\n";    
+        if($podcast_info->{"data"}->{"obsolete"} ne "1"){
+            $dbh->do("INSERT INTO Podcasts VALUES('$podslug','$podtitle')");
+            print "\t+ Podcast ".$podslug." created\n";
+        }
+    }
+    $sth->finish();
 }
 
 $dbh->disconnect();
