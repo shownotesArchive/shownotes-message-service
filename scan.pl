@@ -27,9 +27,9 @@ my $dbh = DBI->connect("dbi:SQLite:dbname=$fileprefix/data.db",
 ) or die $DBI::errstr;
 
 # create table if not exists
-$dbh->do("CREATE TABLE IF NOT EXISTS Podcasts(
-                    Slug TEXT PRIMARY KEY,
-                    Title TEXT
+$dbh->do("CREATE TABLE IF NOT EXISTS podcasts(
+                    slug TEXT PRIMARY KEY,
+                    title TEXT
         )");
 
 # make a JSON parser object
@@ -45,23 +45,25 @@ my $podcasts = $podcast_data->{"data"};
 foreach my $podcast (@$podcasts){
     my $podtitle = $podcast->{"title"};
     my $podslug = $podcast->{"slug"};
-    
-    my $sth = $dbh->prepare("SELECT Slug FROM Podcasts WHERE slug LIKE \'$podslug\'");
-    $sth->execute();
-          
-    if(defined $sth->fetchrow_array()){
-        print "\t- Podcast ".$podslug." is in database\n";
-    }
-    else{
-        my $rawdata_info = get("http://hoersuppe.de/api/?action=getPodcastData&podcast=$podslug");
-        my $podcast_info = $json->decode( $rawdata_info );
-        
-        if($podcast_info->{"data"}->{"obsolete"} ne "1"){
-            $dbh->do("INSERT INTO Podcasts VALUES('$podslug','$podtitle')");
-            print "\t+ Podcast ".$podslug." created\n";
+
+    if(defined $podslug){
+        my $sth = $dbh->prepare("SELECT slug FROM podcasts WHERE slug LIKE \'$podslug\'");
+        $sth->execute();
+              
+        if(defined $sth->fetchrow_array()){
+            print "\t- Podcast ".$podslug." is in database\n";
         }
-    }
-    $sth->finish();
+        else{
+            my $rawdata_info = get("http://hoersuppe.de/api/?action=getPodcastData&podcast=$podslug");
+            my $podcast_info = $json->decode( $rawdata_info );
+            
+            if($podcast_info->{"data"}->{"obsolete"} ne "1"){
+                $dbh->do("INSERT INTO podcasts VALUES('$podslug','$podtitle')");
+                print "\t+ Podcast ".$podslug." created\n";
+            }
+        }
+        $sth->finish();
+    } 
 }
 
 $dbh->disconnect();

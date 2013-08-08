@@ -34,25 +34,21 @@ $dbh->do("PRAGMA foreign_keys = ON");
 
 # create Subscription table if not exists
 $dbh->do("CREATE TABLE IF NOT EXISTS subscriptions(
-                Jid TEXT NOT NULL REFERENCES Subscribers(Jid) ON DELETE CASCADE, 
-                Slug TEXT NOT NULL REFERENCES Podcasts(Slug) ON DELETE CASCADE, 
-                Timestamp INT NOT NULL, 
-                Service INT NOT NULL
+                jid TEXT NOT NULL,
+                slug TEXT NOT NULL,
+                timestamp INT NOT NULL,
+                UNIQUE (jid,slug)
         )");
 
-# create Subscription table if not exists
-$dbh->do("CREATE TABLE IF NOT EXISTS Subscribers(
-                Jid TEXT NOT NULL, 
-                pad TEXT,
+# create Subscribers table if not exists
+$dbh->do("CREATE TABLE IF NOT EXISTS subscribers(
+                jid TEXT NOT NULL,
+                servicehost TEXT NOT NULL,
+                token TEXT DEFAULT 0,
+                challenge TEXT DEFAULT 0,
                 info INT NOT NULL DEFAULT 0,
-                PRIMARY KEY(Jid)
+                UNIQUE (jid,servicehost)
         )");
-
-$dbh->do("CREATE TRIGGER IF NOT EXISTS update_subscribers AFTER DELETE ON subscriptions
-            BEGIN
-                DELETE FROM subscribers WHERE jid NOT IN (SELECT DISTINCT jid FROM subscriptions);
-            END
-         ");
 
 # make a jabber client object
 my $con = new Net::XMPP::Client();
@@ -81,7 +77,7 @@ sub message {
     
     # get informations about the client, who is connected
     my ($sid,$Mess) = @_;
-    my $body = $Mess->GetBody();
+    my $body = lc $Mess->GetBody();
     my $jid = $Mess->GetFrom();
    
     # get account without ressource
@@ -114,7 +110,7 @@ sub message {
     else {
         printhelp();
     }
-    
+
     # send message back to client
     $con->MessageSend(to => $account, type =>'chat' ,body => $msg);
     $msg = '';
@@ -129,12 +125,12 @@ sub printhelp {
 # list all podcasts
 sub podlist {
     
-    my $sth = $dbh->prepare("SELECT Slug FROM Podcasts");
+    my $sth = $dbh->prepare("SELECT slug FROM podcasts order by slug asc");
     $sth->execute();
-          
+
     my $column;
     while ($column = $sth->fetchrow_array()) {
-        $msg =  $msg."$column; ";
+        $msg = $msg."$column; ";
     }
 
     $sth->finish();
@@ -143,31 +139,31 @@ sub podlist {
 # lists all subscribed podcasts of a user
 sub reglist {
     
-    my $sth = $dbh->prepare("SELECT Slug FROM Subscriptions WHERE Jid = \'$account\'");
+    my $sth = $dbh->prepare("SELECT slug FROM subscriptions WHERE jid LIKE \'$account\'");
     $sth->execute();
           
     my $column;
     $msg = $msg."You are subscribed to the following podcasts notifications:\n";
     while ($column = $sth->fetchrow_array()) {
-        $msg =  $msg."  $column\n";
+        $msg = $msg."  $column\n";
     }
 
     $sth->finish();
 }
 
 # unregister a podcast
-sub unregister {
+sub unregister { # ------------------ change to new table
     my $podslug = shift;
     
     if ($podslug eq 'all') {
-        $dbh->do("DELETE FROM Subscribers WHERE Jid = \'$account\'");
+        $dbh->do("DELETE FROM subscribers WHERE jid LIKE \'$account\'");
             
         # set message
         $msg = "Unsubscribed from all podcast notifications";
-        print "        ".$account." all podcast notifiactions\n";
+        print "        ".$account." all podcast notifications\n";
     }
     else {
-        $dbh->do("DELETE FROM Subscriptions WHERE Jid = \'$account\' AND Slug = \'$podslug\'");
+        $dbh->do("DELETE FROM subscriptions WHERE jid LIKE \'$account\' AND slug LIKE \'$podslug\'");
             
         # set message
         $msg = $podslug." unsubscribed";
@@ -178,24 +174,28 @@ sub unregister {
 # register a podcast
 sub register {
     my $podslug = shift;
-
-    my $sth = $dbh->prepare("SELECT Slug FROM Podcasts WHERE Slug = \'$podslug\'");  
+    my $servicehost = $cfg->param('server');
+    my $sth = $dbh->prepare("SELECT slug FROM podcasts WHERE slug LIKE \'$podslug\'");  
     $sth->execute();
           
     if(defined $sth->fetchrow_array()) {
         $sth->finish();
 
-        $dbh->do("INSERT OR IGNORE INTO Subscribers VALUES('$account',NULL,0)");
+        $dbh->do("INSERT OR IGNORE INTO subscribers VALUES('$account',
+                                                           '$servicehost',
+                                                           0,
+                                                           0,
+                                                           0)
+                ");
 
         my $timestamp = time;
-        #$dbh->do("INSERT OR IGNORE INTO Subscriptions VALUES('$account','$podslug',$timestamp,0)");
-        $dbh->do("INSERT INTO Subscriptions 
-                    SELECT '$account','$podslug',$timestamp,0 
+        $dbh->do("INSERT INTO subscriptions 
+                    SELECT '$account','$podslug',$timestamp 
                     WHERE NOT EXISTS (
-                        SELECT jid,slug 
-                        FROM subscriptions 
-                        WHERE jid like '$account'
-                        AND slug like '$podslug'
+                        SELECT jid,slug
+                        FROM subscriptions
+                        WHERE jid LIKE '$account'
+                        AND slug LIKE '$podslug'
                     )
                     AND '$podslug' IN (
                         SELECT slug
