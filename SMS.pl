@@ -99,7 +99,7 @@ sub message {
     elsif($body =~ /^reg ([\w|\d|-]+)/i) {
         register($1);
     }
-    elsif($body =~ /^unreg ([\w|\d|-]+)/i) {
+    elsif($body =~ /^unreg ([\*|\w|\d|-]+)/i) {
         unregister($1);
     }
     elsif($body eq ''){
@@ -119,7 +119,7 @@ sub message {
 
 # help
 sub printhelp {
-    $msg = "list - Get a list of podcasts\nreg <podcast> - Subscribe to a podcast notification\nreglist - Get a list of all your subscribtions\nunreg <podcast | all> - Unsubscribe a podcast notification";
+    $msg = "list - Get a list of podcasts\nreg <podcast> - Subscribe to a podcast notification\nreglist - Get a list of all your subscribtions\nunreg <podcast | *> - Unsubscribe a podcast notification";
 }
 
 # list all podcasts
@@ -152,11 +152,11 @@ sub reglist {
 }
 
 # unregister a podcast
-sub unregister { # ------------------ change to new table
+sub unregister {
     my $podslug = shift;
     
-    if ($podslug eq 'all') {
-        $dbh->do("DELETE FROM subscribers WHERE jid LIKE \'$account\'");
+    if ($podslug eq '*') {
+        $dbh->do("DELETE FROM subscriptions WHERE jid LIKE \'$account\'");
             
         # set message
         $msg = "Unsubscribed from all podcast notifications";
@@ -197,11 +197,7 @@ sub register {
                         WHERE jid LIKE '$account'
                         AND slug LIKE '$podslug'
                     )
-                    AND '$podslug' IN (
-                        SELECT slug
-                        FROM podcasts
-                    )
-              ");
+                ");
             
         # set message
         $msg = $podslug." registered to ".$account;

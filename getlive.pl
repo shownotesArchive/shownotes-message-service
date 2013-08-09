@@ -41,7 +41,7 @@ my $my = $live->{"data"};
 foreach my $livepod (@$my){
     my $podslug = $livepod->{"podcast"};
     
-    my $sth = $dbh->prepare( "SELECT Slug FROM Podcasts WHERE Slug = \'$podslug\'" );
+    my $sth = $dbh->prepare( "SELECT slug FROM podcasts WHERE slug LIKE \'$podslug\'" );
     $sth->execute();
           
     if(defined $sth->fetchrow_array()) {
@@ -60,7 +60,7 @@ foreach my $livepod (@$my){
         if ($livehour == (gethour()+1)) {   
 
             #print "Search subscribers for ".$podslug."\n";
-            my $sth = $dbh->prepare( "SELECT Jid FROM Subscriptions WHERE Slug = \'$podslug\'");  
+            my $sth = $dbh->prepare( "SELECT jid FROM subscriptions WHERE slug LIKE \'$podslug\'");  
             $sth->execute();
 
             my $account;
@@ -84,6 +84,7 @@ foreach my $livepod (@$my){
 
                 print "Send notification about $podslug to $account\n";
 
+                # create message
                 my $msg = $podslug." starts at ".$livetime."\nStream: $streamurl\nSite: $url";
 
                 # send a message
