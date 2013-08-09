@@ -294,7 +294,7 @@ Content-Type: text/html
 
 ### Verfiy token to complete the registration
 
-* URI: http://example.org/rest/register
+* URI: http://example.org/rest/token
 * Methode: PUT
 * Auth: BASIC
 * Content-Type: application/json
