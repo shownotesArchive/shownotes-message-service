@@ -322,8 +322,6 @@ HTTP Status: 409 Conflict
 Content-Type: text/html 
 
 
-# TODO -----------------------------------
-
 ## POST Resources
 
 ### Subscribe or unsubscribe a user to one ore more slugs by jid
@@ -376,3 +374,11 @@ Data:
     ]
 }
 ```
+or, if user is not registered 
+
+HTTP Status: 409 Conflict
+
+Content-Type: text/html
+
+Data:
+

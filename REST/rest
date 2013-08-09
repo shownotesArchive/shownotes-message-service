@@ -71,17 +71,83 @@ eval {
         # get JSON and decode it to hash
         my @rawdata = $cgi->param( 'POSTDATA' );
         my $subscribers = JSON->new->utf8(1)->decode(@rawdata);
-
-        print $cgi->header(-status=>200, -type=>'text/html; charset=UTF-8');
+        my $remotehost = $cgi->remote_host();
         
-        foreach my $subscriber (keys %$subscribers) {
-            print $subscriber."\n";
+        foreach my $key (keys %$subscribers) {
+            my $jid = lc $key; #lowercase
 
-            foreach my $slugs ($subscribers->{$subscriber}) {
-                foreach my $podslug (@$slugs) {
-                    print "  ".$podslug."\n";
+            #is user registered ?
+            my $sth = $dbh->prepare("SELECT * 
+                                        FROM subscribers 
+                                            WHERE jid LIKE \'$jid\' 
+                                            AND servicehost LIKE \'$remotehost\'
+                                            AND token LIKE \'OK\'
+                                   ");  
+            $sth->execute();
+            
+            # if - process
+            if(defined $sth->fetchrow_array()) {
+                
+                #print $cgi->header(-status=>200, -type=>'text/html; charset=UTF-8');
+                foreach my $slugs ($subscribers->{$key}) {
+                    
+                    my $timestamp;
+                    my $errorflag = 0;
+                    my @failedslugs;
+                    foreach my $podslug (@$slugs) {
+                        $timestamp = time;
+                    
+                        # try insert subscriber into db 
+                        my $rv = $dbh->do("INSERT INTO subscriptions
+                                            SELECT '$jid','$podslug',$timestamp
+                                            WHERE NOT EXISTS (
+                                                SELECT jid, slug
+                                                FROM subscriptions
+                                                WHERE jid LIKE '$jid'
+                                                AND slug LIKE '$podslug'
+                                            )
+                                            AND '$podslug' IN (
+                                                SELECT slug FROM podcasts
+                                                WHERE slug LIKE '$podslug'
+                                            )
+                                        ");
+                        if($rv ne '1'){
+                            # if not successful - try delete
+                            my $rv2 = $dbh->do("DELETE FROM subscriptions
+                                                    WHERE jid LIKE '$jid'
+                                                    AND slug LIKE '$podslug'
+                                             ");
+                            if($rv2 ne '1'){
+                                # if not successful - set error and fill array
+                                $errorflag++;
+                                push (@failedslugs,"$podslug");
+                            }
+                        }
+                    }
+                    if($errorflag){
+                        # return slugs with errors
+                        print $cgi->header(-status=>409, -type=>'application/json; charset=UTF-8');
+                        my $out = "{\"success\":false,\"erroron\":[";
+                        
+                        foreach my $slug (@failedslugs) {
+                            $out = $out."\"$slug\",";
+                        }
+                        chop($out);
+                        $out = $out."]}";
+                        print $out;
+                    }
+                    else{
+                        # return 200 OK
+                        print $cgi->header(-status=>200, -type=>'application/json; charset=UTF-8');
+                        print "{\"success\":true,\"erroron\":[]}";
+                    }
                 }
             }
+            else{
+                # user ist not registered
+                print $cgi->header(-status=>409, -type=>'text/html; charset=UTF-8');
+            }
+            $sth->finish();
         }
     };
 
@@ -122,7 +188,6 @@ eval {
                                                      0
                                                     )
                     ");
-             
 
             # Make a new Jabber object an connect
             my $con = new Net::XMPP::Client();
@@ -184,7 +249,6 @@ eval {
         }
         else{
             print $cgi->header(-status=>409, -type=>'text/html; charset=UTF-8');
-            print "noooooopppppp";
         }
         $sth->finish();
 
