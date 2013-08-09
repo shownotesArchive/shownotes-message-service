@@ -12,6 +12,45 @@
 
 This documentation
 
+### Get all slugs
+
+#### Returns
+
+* URI: http://example.org/rest/slug
+* Methode: GET
+* Auth: BASIC
+
+HTTP Status: 200 OK
+
+Content-Type: application/JSON
+
+Data:
+
+```JSON
+{
+    "slugs":{
+        "wrint":{
+            "subscriptions":1337,
+            "title":"Wrint"
+        },
+        "cre":{
+            "subscriptions":23,
+            "title":"CRE"
+        }
+        ...
+    }
+}
+```
+
+or, if there is no entry
+
+HTTP Status: 204 No Content
+
+Content-Type: text/html
+
+Data: -
+
+
 ### Get all subscribers with full information
 
 * URI: http://example.org/rest/subscriber
@@ -227,44 +266,6 @@ Data: -
 ### PUT register - challenge
 
 ### PUT token
-
-### Get all slugs
-
-#### Returns
-
-* URI: http://example.org/rest/slug
-* Methode: GET
-* Auth: BASIC
-
-HTTP Status: 200 OK
-
-Content-Type: application/JSON
-
-Data:
-
-```JSON
-{
-    "slugs":{
-        "wrint":{
-            "subscriptions":1337,
-            "title":"Wrint"
-        },
-        "cre":{
-            "subscriptions":23,
-            "title":"CRE"
-        }
-        ...
-    }
-}
-```
-
-or, if there is no entry
-
-HTTP Status: 204 No Content
-
-Content-Type: text/html
-
-Data: -
 
 ## POST Resources
 

@@ -83,21 +83,52 @@ eval {
         }
     };
 
-    # No arguments provided
+    # No arguments provided - print API description
     GET qr{^$} => sub {
         print $q->header(-status=>200, -type=>'text/html; charset=UTF-8');
-
+        
+        # open api.html
         open FILE,"<","../doc/api.html" or die $!;
         
+        # print file
         while (<FILE>) {
             print $_;
         }
     };
     
+    # Get all slugs with count of subscribers and title
+    GET qr{^/slug} => sub {
+        
+        my $slugs = $dbh->prepare( "SELECT DISTINCT slug,title FROM podcasts ORDER BY slug ASC" );  
+        $slugs->execute();
+
+        if(defined $slugs){
+            print $q->header(-status=>200, -type=>'application/json; charset=UTF-8');
+            
+            my $out = "{\"slugs\":{";
+            while(my @slug = $slugs->fetchrow_array()){
+                
+                my $count = $dbh->prepare( "SELECT count(*) FROM subscriptions WHERE slug LIKE '$slug[0]'" );  
+                $count->execute();
+                my $counter = $count->fetchrow_array();
+
+                $out = $out."\"$slug[0]\":{\"subscriptions\":$counter, \"title\":\"$slug[1]\"},"; 
+                $count->finish();
+            }       
+            chop($out); 
+            print $out."}}";
+        }
+        else {
+            print $q->header(-status=>204, -type=>'text/html; charset=UTF-8');
+        }
+
+        $slugs->finish();
+    };
+       
     # GET infos about all subscribers over jid
     GET qr{^/subscriber$} => sub {
         
-        my $res = $dbh->selectall_arrayref( "SELECT * FROM Subscribers ORDER BY jid ASC" );  
+        my $res = $dbh->selectall_arrayref( "SELECT * FROM subscribers ORDER BY jid ASC" );  
         if(@$res){
             print $q->header(-status=>200, -type=>'application/json; charset=UTF-8');
                         
@@ -118,7 +149,7 @@ eval {
     # GET infos about a particular subscriber over jid
     GET qr{^/subscriber/([\w|\d|-]+@[\w|\d|-]+\.\w+)$} => sub {
         
-        my $res = $dbh->selectall_arrayref( "SELECT pad,info FROM Subscribers WHERE jid LIKE '$1'" );
+        my $res = $dbh->selectall_arrayref( "SELECT pad,info FROM subscribers WHERE jid LIKE '$1'" );
         if(@$res){
             print $q->header(-status=>200, -type=>'application/json; charset=UTF-8');
             
@@ -136,7 +167,7 @@ eval {
 
     # GET infos about all subscriptions sorted by jid
     GET qr{^/subscription/jid$} => sub {
-        my $jids = $dbh->prepare( "SELECT jid FROM Subscribers ORDER BY jid ASC" );  
+        my $jids = $dbh->prepare( "SELECT jid FROM subscribers ORDER BY jid ASC" );  
         $jids->execute();
 
         if(defined $jids){
@@ -144,7 +175,7 @@ eval {
             
             my $out = "{";
             while(my $jid = $jids->fetchrow_array()){
-                my $res = $dbh->selectall_arrayref( "SELECT slug FROM Subscriptions WHERE jid LIKE '$jid' ORDER BY slug ASC" );  
+                my $res = $dbh->selectall_arrayref( "SELECT slug FROM subscriptions WHERE jid LIKE '$jid' ORDER BY slug ASC" );  
                         
                 $out = $out."\"$jid\":["; 
                 foreach my $row (@$res) {
@@ -168,7 +199,7 @@ eval {
     GET qr{^/subscription/jid/(([\w|\d|-]+\.)+[\w|\d|-]+@([\w|\d|-]+\.)+[\w|\d|-]+\.\w+)$} => sub {
         
         my $jid = lc $1;
-        my $res = $dbh->selectall_arrayref( "SELECT slug FROM Subscriptions WHERE jid LIKE '$jid' ORDER BY slug ASC" );  
+        my $res = $dbh->selectall_arrayref( "SELECT slug FROM subscriptions WHERE jid LIKE '$jid' ORDER BY slug ASC" );  
         
         if(@$res){
             print $q->header(-status=>200, -type=>'application/json; charset=UTF-8');
@@ -189,7 +220,7 @@ eval {
 
     # GET infos about all subscriptions sorted by slug
     GET qr{^/subscription/slug$} => sub {
-        my $slugs = $dbh->prepare( "SELECT DISTINCT slug FROM Subscriptions ORDER BY slug ASC" );  
+        my $slugs = $dbh->prepare( "SELECT DISTINCT slug FROM subscriptions ORDER BY slug ASC" );  
         $slugs->execute();
 
         if(defined $slugs){
@@ -197,7 +228,7 @@ eval {
             
             my $out = "{";
             while(my $slug = $slugs->fetchrow_array()){
-                my $res = $dbh->selectall_arrayref( "SELECT jid FROM Subscriptions WHERE slug LIKE '$slug' ORDER BY jid ASC" );  
+                my $res = $dbh->selectall_arrayref( "SELECT jid FROM subscriptions WHERE slug LIKE '$slug' ORDER BY jid ASC" );  
                         
                 $out = $out."\"$slug\":["; 
                 foreach my $row (@$res) {
@@ -221,7 +252,7 @@ eval {
     # GET infos about all subscribed jids of one particular user
     GET qr{^/subscription/slug/([\w|\d|-]+)$} => sub {
          
-        my $res = $dbh->selectall_arrayref( "SELECT jid FROM Subscriptions WHERE slug LIKE '$1' ORDER BY jid ASC" );  
+        my $res = $dbh->selectall_arrayref( "SELECT jid FROM subscriptions WHERE slug LIKE '$1' ORDER BY jid ASC" );  
          
         if(@$res){
             print $q->header(-status=>200, -type=>'application/json; charset=UTF-8');
