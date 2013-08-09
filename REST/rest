@@ -88,21 +88,28 @@ eval {
     # PUT register a new user
     PUT qr{^/register$} => sub {
 
-        # get remote hostname
-        
         # get JSON and decode it to hash
         my @rawdata = $cgi->param( 'PUTDATA' );
         my $register = JSON->new->utf8(1)->decode(@rawdata);
         
-        my $challenge = $$register{"challenge"};
+        # get other values
         my $jid = lc $$register{"jid"};
+        my $challenge = $$register{"challenge"};
         my $remotehost = $cgi->remote_host();
+        
+        # generate CRC32 checksumm as token
         my $token = crc32(time.$remotehost.$jid.$challenge);
 
-        my $sth = $dbh->prepare( "SELECT jid,servicehost FROM subscribers WHERE jid LIKE \'$jid\' AND servicehost LIKE \'$remotehost\'");  
+        # do nothing if user is registered by this service
+        my $sth = $dbh->prepare("SELECT jid,servicehost 
+                                    FROM subscribers 
+                                    WHERE jid LIKE \'$jid\' 
+                                    AND servicehost LIKE \'$remotehost\'
+                               ");  
         $sth->execute();
 
         if(defined $sth->fetchrow_array()) {
+            # nothing to do ;)
             print $cgi->header(-status=>409, -type=>'text/html; charset=UTF-8');
         }
         else{
@@ -147,6 +154,42 @@ eval {
         }
         $sth->finish();
     };
+
+    # PUT token to complete registration of a new user
+    PUT qr{^/token$} => sub {
+
+        # get JSON and decode it to hash
+        my @rawdata = $cgi->param( 'PUTDATA' );
+        my $tok = JSON->new->utf8(1)->decode(@rawdata);
+        
+        my $jid = lc $$tok{"jid"};
+        my $passedtoken = $$tok{"token"};
+        my $challenge = $$tok{"challenge"};
+        my $remotehost = $cgi->remote_host();
+
+        my $sth = $dbh->prepare("SELECT * 
+                                    FROM subscribers 
+                                        WHERE jid LIKE \'$jid\' 
+                                        AND servicehost LIKE \'$remotehost\'
+                                        AND token LIKE \'$passedtoken\'
+                                        AND challenge LIKE \'$challenge\'
+                               ");  
+        $sth->execute();
+
+        if(defined $sth->fetchrow_array()) {
+            # update token to indicate a successful registration
+            $dbh->do("UPDATE subscribers SET token='OK' WHERE jid LIKE '$jid' AND servicehost LIKE '$remotehost' AND challenge LIKE '$challenge'");
+
+            print $cgi->header(-status=>200, -type=>'text/html; charset=UTF-8');
+        }
+        else{
+            print $cgi->header(-status=>409, -type=>'text/html; charset=UTF-8');
+            print "noooooopppppp";
+        }
+        $sth->finish();
+
+    };
+
 
     # No arguments provided - print API description
     GET qr{^$} => sub {

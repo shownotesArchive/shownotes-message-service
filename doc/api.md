@@ -292,7 +292,34 @@ HTTP Status: 409 Conflict
 Content-Type: text/html 
 
 
-### PUT token
+### Verfiy token to complete the registration
+
+* URI: http://example.org/rest/register
+* Methode: PUT
+* Auth: BASIC
+* Content-Type: application/json
+
+Data:
+
+```JSON
+{
+    "jid":"anon@example.org",
+    "token":"user_entered_token",
+    "challenge":"12345example"
+}
+```
+
+### Returns
+
+HTTP Status: 200 OK
+
+Content-Type: text/html
+
+or, if token is wrong
+
+HTTP Status: 409 Conflict
+
+Content-Type: text/html 
 
 
 # TODO -----------------------------------

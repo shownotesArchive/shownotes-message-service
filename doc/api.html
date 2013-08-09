@@ -207,9 +207,45 @@ code > span.er { color: #ff0000; font-weight: bold; }
 <p>HTTP Status: 204 No Content</p>
 <p>Content-Type: text/html</p>
 <p>Data: -</p>
-<h1 id="todo">TODO</h1>
-<h3 id="put-register---challenge">PUT register - challenge</h3>
-<h3 id="put-token">PUT token</h3>
+<h2 id="put-resources">PUT Resources</h2>
+<h3 id="register-a-new-user-to-the-service-by-putting-a-jid-and-a-challenge">Register a new user to the service by putting a jid and a challenge</h3>
+<ul>
+<li>URI: http://example.org/rest/register</li>
+<li>Methode: PUT</li>
+<li>Auth: BASIC</li>
+<li>Content-Type: application/json</li>
+</ul>
+<p>Data:</p>
+<pre class="sourceCode JSON"><code class="sourceCode json">{
+    <span class="dt">&quot;jid&quot;</span>:<span class="st">&quot;anon@example.org&quot;</span>,
+    <span class="dt">&quot;challenge&quot;</span>:<span class="st">&quot;12345example&quot;</span>
+}</code></pre>
+<h3 id="returns-8">Returns</h3>
+<p>HTTP Status: 200 OK</p>
+<p>Content-Type: text/html</p>
+<p>or, if user is registered to service</p>
+<p>HTTP Status: 409 Conflict</p>
+<p>Content-Type: text/html</p>
+<h3 id="verfiy-token-to-complete-the-registration">Verfiy token to complete the registration</h3>
+<ul>
+<li>URI: http://example.org/rest/register</li>
+<li>Methode: PUT</li>
+<li>Auth: BASIC</li>
+<li>Content-Type: application/json</li>
+</ul>
+<p>Data:</p>
+<pre class="sourceCode JSON"><code class="sourceCode json">{
+    <span class="dt">&quot;jid&quot;</span>:<span class="st">&quot;anon@example.org&quot;</span>,
+    <span class="dt">&quot;token&quot;</span>:<span class="st">&quot;user_entered_token&quot;</span>,
+    <span class="dt">&quot;challenge&quot;</span>:<span class="st">&quot;12345example&quot;</span>
+}</code></pre>
+<h3 id="returns-9">Returns</h3>
+<p>HTTP Status: 200 OK</p>
+<p>Content-Type: text/html</p>
+<p>or, if token is wrong</p>
+<p>HTTP Status: 409 Conflict</p>
+<p>Content-Type: text/html</p>
+<h1 id="todo------------------------------------">TODO -----------------------------------</h1>
 <h2 id="post-resources">POST Resources</h2>
 <h3 id="subscribe-or-unsubscribe-a-user-to-one-ore-more-slugs-by-jid">Subscribe or unsubscribe a user to one ore more slugs by jid</h3>
 <ul>
@@ -225,7 +261,7 @@ code > span.er { color: #ff0000; font-weight: bold; }
         <span class="st">&quot;nsfw&quot;</span>
     ]
 }</code></pre>
-<h3 id="returns-8">Returns</h3>
+<h3 id="returns-10">Returns</h3>
 <p>HTTP Status: 200 OK</p>
 <p>Content-Type: application/json</p>
 <p>Data:</p>
