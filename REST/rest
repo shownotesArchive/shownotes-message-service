@@ -67,7 +67,7 @@ sub DELETE($$) {
 eval {
 
     # PUT subscribe slugs to a user
-    POST qr{^/subscribe$} => sub {
+    POST qr{^/subscription$} => sub {
         # get JSON and decode it to hash
         my @rawdata = $cgi->param( 'POSTDATA' );
         my $subscribers = JSON->new->utf8(1)->decode(@rawdata);
