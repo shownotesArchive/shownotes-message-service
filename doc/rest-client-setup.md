@@ -7,6 +7,7 @@ You will find a full API description here: [api.md](api.md "api.md")
 
 ## Additional perl module
 * CGI
+* String::CRC32
 
 ## Step 1 - Setup basic authentication
 
@@ -32,4 +33,12 @@ Restart or reload  the apache server
 service apache2 [restart/reload]
 ```
 
-Your REST service should be available now.
+## Step 3 - Make database writeable
+
+Ensure, that the directory with your database file is writeable from your webserver.
+In debian systems with apache2 you have to:
+
+* set the group attribute on database file to www-data
+* set the parent directory to writeable 
+
+Congratulation's, your own REST service should be available now.

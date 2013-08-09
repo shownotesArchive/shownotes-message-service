@@ -25,9 +25,9 @@ unreg <podcast | all> - Unsubscribe a podcast notifcation
 
 ## Perl modules
 
-* Config:Simple
+* Config::Simple
 * POSIX
-* File:Basename
+* File::Basename
 * DBI
 * Net::XMPP
 * LWP::Simple

@@ -261,11 +261,41 @@ Content-Type: text/html
 
 Data: -
 
-# TODO
+## PUT Resources
 
-### PUT register - challenge
+### Register a new user to the service by putting a jid and a challenge
+
+* URI: http://example.org/rest/register
+* Methode: PUT
+* Auth: BASIC
+* Content-Type: application/json
+
+Data:
+
+```JSON
+{
+    "jid":"anon@example.org",
+    "challenge":"12345example"
+}
+```
+
+### Returns
+
+HTTP Status: 200 OK
+
+Content-Type: text/html
+
+or, if user is registered to service 
+
+HTTP Status: 409 Conflict
+
+Content-Type: text/html 
+
 
 ### PUT token
+
+
+# TODO -----------------------------------
 
 ## POST Resources
 

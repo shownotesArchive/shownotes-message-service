@@ -9,7 +9,6 @@ use utf8;
 use POSIX;
 use Data::Dumper;
 use Config::Simple;
-use File::Basename;
 
 use DBI;
 
@@ -18,9 +17,8 @@ use LWP::Simple;
 use JSON;
 
 # make a new config reader object
-my $programpath = dirname(__FILE__);
-my $cfg = new Config::Simple("$programpath/sms.config");
-my $datapath = $cfg->param('directory');
+my $cfg = new Config::Simple("sms.config");
+my $programpath = $cfg->param('directory');
 
 # connect to database
 my $dbh = DBI->connect("dbi:SQLite:dbname=$programpath/data.db",
