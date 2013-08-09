@@ -41,5 +41,4 @@ unreg <podcast | all> - Unsubscribe a podcast notifcation
 
 ## Licence
 
-**This program is published under the terms of GPLv2 and comes with no warranty.**
-**Use it on your own risk.**
+This program is published under the terms of [GPLv2](LICENSE "GPLv2") and comes with no warranty.

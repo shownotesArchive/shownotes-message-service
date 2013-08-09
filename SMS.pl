@@ -102,6 +102,9 @@ sub message {
     elsif($body =~ /^unreg ([\*|\w|\d|-]+)/i) {
         unregister($1);
     }
+    elsif($body eq 'about'){
+        about();
+    }
     elsif($body eq ''){
         print "Empty Body\n";
         # do nothing... 
@@ -117,9 +120,14 @@ sub message {
     return
 }
 
+# about
+sub about {
+    $msg = "Shownotes Message Service\n=========================\n\nAuthor: Martin Stoffers\nEmail:  Dr4k3\@shownot.es\nSource: https://github.com/shownotes/shownotes-message-service\n\nContributers: SimonWaldherr\n\nThis program is published under the terms of GPLv2 and comes with no warranty.\nhttp://www.gnu.org/licenses/gpl-2.0.txt";
+}
+
 # help
 sub printhelp {
-    $msg = "list - Get a list of podcasts\nreg <podcast> - Subscribe to a podcast notification\nreglist - Get a list of all your subscribtions\nunreg <podcast | *> - Unsubscribe a podcast notification";
+    $msg = "list - Get a list of podcasts\nreg <podcast> - Subscribe to a podcast notification\nreglist - Get a list of all your subscribtions\nunreg <podcast | *> - Unsubscribe a podcast notification\nabout - About the bot";
 }
 
 # list all podcasts
