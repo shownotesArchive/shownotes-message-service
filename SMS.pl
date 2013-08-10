@@ -102,11 +102,14 @@ sub message {
     elsif($body eq 'reglist') {
         reglist();
     }
-    elsif($body =~ /^reg ([\w|\d|-]+)/i) {
+    elsif($body =~ /^reg ([\w|\d|-]+)$/i) {
         register($1);
     }
-    elsif($body =~ /^unreg ([\*|\w|\d|-]+)/i) {
+    elsif($body =~ /^unreg ([\*|\w|\d|-]+)$/i) {
         unregister($1);
+    }
+    elsif($body =~ /^notify (on|off)$/i) {
+        showpadinfo($1);
     }
     elsif($body eq 'about'){
         about();
@@ -126,6 +129,37 @@ sub message {
     return
 }
 
+#showpad info
+sub showpadinfo {
+   
+    my $servicehost = $cfg->param('server');
+    
+    $dbh->do("INSERT OR IGNORE INTO subscribers
+                VALUES('$account','$servicehost',0,0)
+             ");
+     
+    $dbh->do("INSERT OR IGNORE INTO padinfo
+                VALUES('$account',0)
+            ");
+
+    my $infoverbal = shift;
+    my $info = 0;
+
+    if($infoverbal eq "on"){
+        $info = 1;
+    }
+
+    my $sth = $dbh->do("UPDATE padinfo SET info=$info
+                            WHERE jid LIKE '$account'
+                      ");
+    if($info == 1){
+        $msg = "Showpad notification activated";
+    }
+    else{
+        $msg = "Showpad notification deactivated";
+    }
+}
+
 # about
 sub about {
     $msg = "Shownotes Message Service\n=========================\n\nSource: https://github.com/shownotes/shownotes-message-service\n\nAuthor: Martin Stoffers\nEmail: Dr4k3\@shownot.es\nJabber: Dr4k3\@fastreboot.de\n\nContributers:\n\n Simon Waldherr\n Email:  SimonWaldherr\@shownot.es\n Jabber: SimonWaldherr\@jabber.shownot.es\n\n\nThis program is published under the terms of GPLv2 and comes with no warranty.\nhttp://www.gnu.org/licenses/gpl-2.0.txt";
@@ -138,7 +172,7 @@ sub printhelp {
 
 # list all podcasts
 sub podlist {
-    
+
     my $sth = $dbh->prepare("SELECT slug FROM podcasts
                                 ORDER BY slug ASC
                            ");
