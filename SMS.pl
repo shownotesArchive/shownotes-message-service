@@ -133,7 +133,9 @@ sub printhelp {
 # list all podcasts
 sub podlist {
     
-    my $sth = $dbh->prepare("SELECT slug FROM podcasts order by slug asc");
+    my $sth = $dbh->prepare("SELECT slug FROM podcasts
+                                ORDER BY slug ASC
+                           ");
     $sth->execute();
 
     my $column;
@@ -147,7 +149,9 @@ sub podlist {
 # lists all subscribed podcasts of a user
 sub reglist {
     
-    my $sth = $dbh->prepare("SELECT slug FROM subscriptions WHERE jid LIKE \'$account\'");
+    my $sth = $dbh->prepare("SELECT slug FROM subscriptions
+                                WHERE jid LIKE '$account'
+                            ");
     $sth->execute();
           
     my $column;
@@ -164,14 +168,18 @@ sub unregister {
     my $podslug = shift;
     
     if ($podslug eq '*') {
-        $dbh->do("DELETE FROM subscriptions WHERE jid LIKE \'$account\'");
+        $dbh->do("DELETE FROM subscriptions
+                    WHERE jid LIKE '$account'");
             
         # set message
         $msg = "Unsubscribed from all podcast notifications";
         print "        ".$account." all podcast notifications\n";
     }
     else {
-        $dbh->do("DELETE FROM subscriptions WHERE jid LIKE \'$account\' AND slug LIKE \'$podslug\'");
+        $dbh->do("DELETE FROM subscriptions
+                    WHERE jid LIKE '$account'
+                    AND slug LIKE '$podslug'
+                 ");
             
         # set message
         $msg = $podslug." unsubscribed";
@@ -183,28 +191,26 @@ sub unregister {
 sub register {
     my $podslug = shift;
     my $servicehost = $cfg->param('server');
-    my $sth = $dbh->prepare("SELECT slug FROM podcasts WHERE slug LIKE \'$podslug\'");  
+    my $sth = $dbh->prepare("SELECT slug FROM podcasts
+                                WHERE slug LIKE '$podslug'
+                            ");  
     $sth->execute();
           
     if(defined $sth->fetchrow_array()) {
         $sth->finish();
 
-        $dbh->do("INSERT OR IGNORE INTO subscribers VALUES('$account',
-                                                           '$servicehost',
-                                                           0,
-                                                           0,
-                                                           0)
+        $dbh->do("INSERT OR IGNORE INTO subscribers
+                    VALUES('$account','$servicehost',0,0,0)
                 ");
 
         my $timestamp = time;
         $dbh->do("INSERT INTO subscriptions 
                     SELECT '$account','$podslug',$timestamp 
                     WHERE NOT EXISTS (
-                        SELECT jid,slug
-                        FROM subscriptions
-                        WHERE jid LIKE '$account'
-                        AND slug LIKE '$podslug'
-                    )
+                        ( SELECT jid,slug FROM subscriptions
+                            WHERE jid LIKE '$account'
+                            AND slug LIKE '$podslug'
+                        )
                 ");
             
         # set message

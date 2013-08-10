@@ -68,11 +68,9 @@ Data:
 ```JSON
 {
     "anon@example.org":{
-        "pad":"",
         "info":1
     },
     "anon2@example.org":{
-        "pad":"anon",
         "info":0
     }
 }
@@ -104,7 +102,6 @@ Data:
 ```JSON
 {
     "anon@example.org":{
-        "pad":"",
         "info":1
     }
 }
