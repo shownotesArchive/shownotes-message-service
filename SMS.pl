@@ -46,9 +46,15 @@ $dbh->do("CREATE TABLE IF NOT EXISTS subscribers(
                 servicehost TEXT NOT NULL,
                 token TEXT DEFAULT 0,
                 challenge TEXT DEFAULT 0,
-                info INT NOT NULL DEFAULT 0,
                 UNIQUE (jid,servicehost)
         )");
+
+# create pad info table if not exists
+$dbh->do("CREATE TABLE IF NOT EXISTS padinfo(
+                jid TEXT NOT NULL PRIMARY KEY,
+                info INT NOT NULL DEFAULT 0
+        )");
+
 
 # make a jabber client object
 my $con = new Net::XMPP::Client();
@@ -200,13 +206,17 @@ sub register {
         $sth->finish();
 
         $dbh->do("INSERT OR IGNORE INTO subscribers
-                    VALUES('$account','$servicehost',0,0,0)
+                    VALUES('$account','$servicehost',0,0)
+                ");
+
+        $dbh->do("INSERT OR IGNORE INTO padinfo
+                    VALUES('$account',0)
                 ");
 
         my $timestamp = time;
         $dbh->do("INSERT INTO subscriptions 
                     SELECT '$account','$podslug',$timestamp 
-                    WHERE NOT EXISTS (
+                    WHERE NOT EXISTS
                         ( SELECT jid,slug FROM subscriptions
                             WHERE jid LIKE '$account'
                             AND slug LIKE '$podslug'

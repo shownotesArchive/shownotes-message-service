@@ -51,9 +51,9 @@ Content-Type: text/html
 Data: -
 
 
-### Get all subscribers with full information
+### Get all subscribers of showpad notification
 
-* URI: http://example.org/rest/subscriber
+* URI: http://example.org/rest/showpad
 * Methode: GET
 * Auth: BASIC
 
@@ -85,9 +85,9 @@ Content-Type: text/html
 Data: -
 
 
-### Get a specific subscriber by jid with full information
+### Get a specific subscriber for showpad notification by jid
 
-* URI: http://example.org/rest/subscriber/{jid}
+* URI: http://example.org/rest/showpad/{jid}
 * Methode: GET
 * Auth: BASIC
 
@@ -318,6 +318,34 @@ HTTP Status: 409 Conflict
 
 Content-Type: text/html 
 
+### Change value for showpad notification for a particular user
+
+* URI: http://example.org/rest/showpad
+* Methode: PUT
+* Auth: BASIC
+* Content-Type: application/json
+
+Data:
+
+```JSON
+{
+    "anon@example.org":true
+}
+```
+
+### Returns
+
+HTTP Status: 200 OK
+
+Content-Type: text/html
+
+or, if user is not registerd to service 
+
+HTTP Status: 400 Bad Request 
+
+Content-Type: text/html
+
+
 
 ## POST Resources
 
@@ -378,4 +406,29 @@ HTTP Status: 409 Conflict
 Content-Type: text/html
 
 Data:
+
+
+### Send info about new pads from pad.shownot.es
+
+* URI: http://example.org/rest/newpad
+* Methode: POST
+* Auth: BASIC
+* Content-Type: application/json
+
+Data:
+
+```JSON
+{
+    "pad":"einschlafen-42",
+    "link":"http://pad.shownot.es/doc/einschlafen-42",
+}
+```
+
+### Returns
+
+HTTP Status: 200 OK
+
+Content-Type: text/html
+
+Data: 
 

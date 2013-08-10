@@ -66,7 +66,61 @@ sub DELETE($$) {
 
 eval {
 
-    # PUT subscribe slugs to a user
+    # send pad notfication to each user who want
+    POST qr{^/newpad$} => sub {
+        # get JSON and decode it to hash
+        my @rawdata = $cgi->param( 'POSTDATA' );
+        my $padinfo = JSON->new->utf8(1)->decode(@rawdata);
+        my $remotehost = $cgi->remote_host();
+        
+        # get other values
+        my $pad = $$padinfo{"pad"};
+        my $link = $$padinfo{"link"};
+
+        #is user registered ?
+        my $sth = $dbh->prepare("SELECT jid FROM padinfo
+                                        WHERE info = 1 
+                               ");  
+        $sth->execute();
+
+        if(defined $sth){
+               
+            while(my @jid = $sth->fetchrow_array()){
+                
+                # Make a new Jabber object an connect
+                my $con = new Net::XMPP::Client();
+                my $status = $con->Connect(hostname => $cfg->param('server'),
+                                           connectiontype => 'tcpip',
+                                           tls => 0);
+                die('ERROR: XMPP connection failed') if ! defined($status);
+
+                # authenticate
+                my @result = $con->AuthSend(hostname =>$cfg->param('server'), 
+                                            username =>$cfg->param('username'),
+                                            password =>$cfg->param('password'),
+                                            resource => $cfg->param('inforesource'));
+                die('ERROR: XMPP authentication failed') if $result[0] ne 'ok';
+                
+                $con->PresenceSend(show=>'available');
+
+                # create message
+                my $msg = "Showpad \"$pad\" created.\nContribute at: $link";
+
+                # send a message
+                # type = "headline" for penetrant notfication on client-side
+                die('ERROR: XMPP message failed') if ($con->MessageSend(to => $jid[0],
+                                                                                type =>'chat',
+                                                                                body => $msg) != 0);
+   
+                $con->Disconnect();
+            }           
+        }
+        $sth->finish();
+        print $cgi->header(-status=>200, -type=>'application/json; charset=UTF-8');
+    };
+
+
+    # subscribe slugs to a user
     POST qr{^/subscription$} => sub {
         # get JSON and decode it to hash
         my @rawdata = $cgi->param( 'POSTDATA' );
@@ -77,18 +131,17 @@ eval {
             my $jid = lc $key; #lowercase
 
             #is user registered ?
-            my $sth = $dbh->prepare("SELECT * 
-                                        FROM subscribers 
-                                            WHERE jid LIKE '$jid' 
-                                            AND servicehost LIKE '$remotehost'
-                                            AND token LIKE 'OK'
+            my $sth = $dbh->prepare("SELECT * FROM subscribers 
+                                        WHERE jid LIKE '$jid' 
+                                        AND servicehost LIKE '$remotehost'
+                                        AND token LIKE 'OK'
                                    ");  
             $sth->execute();
+            
             
             # if - process
             if(defined $sth->fetchrow_array()) {
                 
-                #print $cgi->header(-status=>200, -type=>'text/html; charset=UTF-8');
                 foreach my $slugs ($subscribers->{$key}) {
                     
                     my $timestamp;
@@ -151,6 +204,7 @@ eval {
         }
     };
 
+
     # PUT register a new user
     PUT qr{^/register$} => sub {
 
@@ -167,7 +221,7 @@ eval {
         my $token = crc32(time.$remotehost.$jid.$challenge);
 
         # do nothing if user is registered by this service
-        my $sth = $dbh->prepare("SELECT jid,servicehost 
+        my $sth = $dbh->prepare("SELECT jid,servicehost
                                     FROM subscribers 
                                     WHERE jid LIKE \'$jid\' 
                                     AND servicehost LIKE \'$remotehost\'
@@ -181,12 +235,12 @@ eval {
         else{
             
             # insert subscriber into db 
-            $dbh->do("INSERT INTO subscribers VALUES('$jid',
-                                                     '$remotehost',
-                                                     '$token',
-                                                     '$challenge',
-                                                     0
-                                                    )
+            $dbh->do("INSERT INTO subscribers 
+                        VALUES('$jid', '$remotehost', '$token', '$challenge')
+                    ");
+
+            $dbh->do("INSERT OR IGNORE INTO padinfo
+                        VALUES('$jid',0)
                     ");
 
             # Make a new Jabber object an connect
@@ -220,6 +274,7 @@ eval {
         $sth->finish();
     };
 
+
     # PUT token to complete registration of a new user
     PUT qr{^/token$} => sub {
 
@@ -233,10 +288,10 @@ eval {
         my $remotehost = $cgi->remote_host();
 
         my $sth = $dbh->prepare("SELECT * FROM subscribers 
-                                    WHERE jid LIKE \'$jid\' 
-                                    AND servicehost LIKE \'$remotehost\'
-                                    AND token LIKE \'$passedtoken\'
-                                    AND challenge LIKE \'$challenge\'
+                                    WHERE jid LIKE '$jid' 
+                                    AND servicehost LIKE '$remotehost'
+                                    AND token LIKE '$passedtoken'
+                                    AND challenge LIKE '$challenge'
                                ");  
         $sth->execute();
 
@@ -258,6 +313,49 @@ eval {
     };
 
 
+    # PUT - change value for showpad notification for a particular user
+    PUT qr{^/showpad$} => sub {
+
+        # get JSON and decode it to hash
+        my @rawdata = $cgi->param( 'PUTDATA' );
+        my $showpad = JSON->new->utf8(1)->decode(@rawdata);
+        
+        my $remotehost = $cgi->remote_host();
+
+        foreach my $key (keys %$showpad) {
+            my $jid = lc $key; #lowercase
+            my $boolinfo = $$showpad{"$jid"};
+
+        
+            my $sth = $dbh->prepare("SELECT * FROM subscribers 
+                                        WHERE jid LIKE '$jid' 
+                                        AND servicehost LIKE '$remotehost'
+                                        AND token LIKE 'OK'
+                                   ");  
+            $sth->execute();
+
+            if(defined $sth->fetchrow_array()) {
+
+                my $info = 0;
+                if($boolinfo eq "true"){
+                    $info = 1
+                }
+                
+                # update showpad info
+                $dbh->do("UPDATE padinfo SET info=$info
+                            WHERE jid LIKE '$jid' 
+                        ");
+
+                print $cgi->header(-status=>200, -type=>'text/html; charset=UTF-8');
+            }
+            else{
+                print $cgi->header(-status=>400, -type=>'text/html; charset=UTF-8');
+            }
+            $sth->finish();
+        }
+    };
+
+
     # No arguments provided - print API description
     GET qr{^$} => sub {
         print $cgi->header(-status=>200, -type=>'text/html; charset=UTF-8');
@@ -270,9 +368,10 @@ eval {
             print $_;
         }
     };
-    
+   
+
     # Get all slugs with count of subscribers and title
-    GET qr{^/slug} => sub {
+    GET qr{^/slug$} => sub {
         
         my $slugs = $dbh->prepare("SELECT DISTINCT slug,title FROM podcasts
                                         ORDER BY slug ASC
@@ -280,7 +379,6 @@ eval {
         $slugs->execute();
 
         if(defined $slugs){
-            print $cgi->header(-status=>200, -type=>'application/json; charset=UTF-8');
             
             my $out = "{\"slugs\":{";
             while(my @slug = $slugs->fetchrow_array()){
@@ -295,6 +393,7 @@ eval {
                 $count->finish();
             }       
             chop($out); 
+            print $cgi->header(-status=>200, -type=>'application/json; charset=UTF-8');
             print $out."}}";
         }
         else {
@@ -303,13 +402,15 @@ eval {
 
         $slugs->finish();
     };
-       
-    # GET infos about all subscribers over jid
-    GET qr{^/subscriber$} => sub {
+      
+
+    # GET infos about all subscribers for showpad notification
+    GET qr{^/showpad$} => sub {
         
         my $remotehost = $cgi->remote_host();
         
-        my $res = $dbh->selectall_arrayref("SELECT jid,info FROM subscribers 
+        my $res = $dbh->selectall_arrayref("SELECT jid,info FROM subscribers
+                                                JOIN padinfo USING (jid) 
                                                 WHERE servicehost LIKE '$remotehost'
                                                 AND token LIKE 'OK'
                                                 ORDER BY jid ASC
@@ -331,12 +432,13 @@ eval {
     };
 
  
-    # GET infos about a particular subscriber over jid
-    GET qr{^/subscriber/((([\w|\d|-]+\.)+)?[\w|\d|-]+@(([\w|\d|-]+\.)+)?[\w|\d|-]+\.\w+)$} => sub {
+    # GET infos about a particular subscriber for showpad notification over jid
+    GET qr{^/showpad/((([\w|\d|-]+\.)+)?[\w|\d|-]+@(([\w|\d|-]+\.)+)?[\w|\d|-]+\.\w+)$} => sub {
         
         my $jid = lc $1;
         my $remotehost = $cgi->remote_host();
         my $sth = $dbh->prepare("SELECT info FROM subscribers 
+                                    JOIN padinfo USING (jid) 
                                     WHERE jid LIKE '$jid' 
                                     AND servicehost LIKE '$remotehost'
                                     AND token LIKE 'OK'

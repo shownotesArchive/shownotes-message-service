@@ -64,9 +64,9 @@ code > span.er { color: #ff0000; font-weight: bold; }
 <p>HTTP Status: 204 No Content</p>
 <p>Content-Type: text/html</p>
 <p>Data: -</p>
-<h3 id="get-all-subscribers-with-full-information">Get all subscribers with full information</h3>
+<h3 id="get-all-subscribers-of-showpad-notification">Get all subscribers of showpad notification</h3>
 <ul>
-<li>URI: http://example.org/rest/subscriber</li>
+<li>URI: http://example.org/rest/showpad</li>
 <li>Methode: GET</li>
 <li>Auth: BASIC</li>
 </ul>
@@ -86,9 +86,9 @@ code > span.er { color: #ff0000; font-weight: bold; }
 <p>HTTP Status: 204 No Content</p>
 <p>Content-Type: text/html</p>
 <p>Data: -</p>
-<h3 id="get-a-specific-subscriber-by-jid-with-full-information">Get a specific subscriber by jid with full information</h3>
+<h3 id="get-a-specific-subscriber-for-showpad-notification-by-jid">Get a specific subscriber for showpad notification by jid</h3>
 <ul>
-<li>URI: http://example.org/rest/subscriber/{jid}</li>
+<li>URI: http://example.org/rest/showpad/{jid}</li>
 <li>Methode: GET</li>
 <li>Auth: BASIC</li>
 </ul>
@@ -242,6 +242,23 @@ code > span.er { color: #ff0000; font-weight: bold; }
 <p>or, if token is wrong</p>
 <p>HTTP Status: 409 Conflict</p>
 <p>Content-Type: text/html</p>
+<h3 id="change-value-for-showpad-notification-for-a-particular-user">Change value for showpad notification for a particular user</h3>
+<ul>
+<li>URI: http://example.org/rest/showpad</li>
+<li>Methode: PUT</li>
+<li>Auth: BASIC</li>
+<li>Content-Type: application/json</li>
+</ul>
+<p>Data:</p>
+<pre class="sourceCode JSON"><code class="sourceCode json">{
+    <span class="dt">&quot;anon@example.org&quot;</span>:<span class="dv">true</span>
+}</code></pre>
+<h3 id="returns-10">Returns</h3>
+<p>HTTP Status: 200 OK</p>
+<p>Content-Type: text/html</p>
+<p>or, if user is not registerd to service</p>
+<p>HTTP Status: 400 Bad Request</p>
+<p>Content-Type: text/html</p>
 <h2 id="post-resources">POST Resources</h2>
 <h3 id="subscribe-or-unsubscribe-a-user-to-one-ore-more-slugs-by-jid">Subscribe or unsubscribe a user to one ore more slugs by jid</h3>
 <ul>
@@ -257,7 +274,7 @@ code > span.er { color: #ff0000; font-weight: bold; }
         <span class="st">&quot;nsfw&quot;</span>
     ]
 }</code></pre>
-<h3 id="returns-10">Returns</h3>
+<h3 id="returns-11">Returns</h3>
 <p>HTTP Status: 200 OK</p>
 <p>Content-Type: application/json</p>
 <p>Data:</p>
@@ -278,6 +295,22 @@ code > span.er { color: #ff0000; font-weight: bold; }
 }</code></pre>
 <p>or, if user is not registered</p>
 <p>HTTP Status: 409 Conflict</p>
+<p>Content-Type: text/html</p>
+<p>Data:</p>
+<h3 id="send-info-about-new-pads-from-pad.shownot.es">Send info about new pads from pad.shownot.es</h3>
+<ul>
+<li>URI: http://example.org/rest/newpad</li>
+<li>Methode: POST</li>
+<li>Auth: BASIC</li>
+<li>Content-Type: application/json</li>
+</ul>
+<p>Data:</p>
+<pre class="sourceCode JSON"><code class="sourceCode json">{
+    <span class="dt">&quot;pad&quot;</span>:<span class="st">&quot;einschlafen-42&quot;</span>,
+    <span class="dt">&quot;link&quot;</span>:<span class="st">&quot;http://pad.shownot.es/doc/einschlafen-42&quot;</span>,
+}</code></pre>
+<h3 id="returns-12">Returns</h3>
+<p>HTTP Status: 200 OK</p>
 <p>Content-Type: text/html</p>
 <p>Data:</p>
 </body>
