@@ -405,12 +405,10 @@ eval {
         my $remotehost = $cgi->remote_host();
         
         my $res = $dbh->selectall_arrayref("SELECT slug FROM subscriptions 
+                                                JOIN subscribers USING (jid)
                                                 WHERE jid LIKE '$jid'
-                                                AND '$remotehost' IN
-                                                    ( SELECT servicehost FROM subscribers
-                                                        WHERE servicehost LIKE '$remotehost'
-                                                        AND token LIKE 'OK'
-                                                    )
+                                                AND servicehost LIKE '$remotehost'
+                                                AND token LIKE 'OK'
                                                 ORDER BY slug ASC
                                            ");  
         
