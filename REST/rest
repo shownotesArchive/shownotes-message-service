@@ -79,9 +79,9 @@ eval {
             #is user registered ?
             my $sth = $dbh->prepare("SELECT * 
                                         FROM subscribers 
-                                            WHERE jid LIKE \'$jid\' 
-                                            AND servicehost LIKE \'$remotehost\'
-                                            AND token LIKE \'OK\'
+                                            WHERE jid LIKE '$jid' 
+                                            AND servicehost LIKE '$remotehost'
+                                            AND token LIKE 'OK'
                                    ");  
             $sth->execute();
             
