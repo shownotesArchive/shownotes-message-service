@@ -162,7 +162,7 @@ sub showpadinfo {
 
 # about
 sub about {
-    $msg = "Shownotes Message Service\n=========================\n\nSource: https://github.com/shownotes/shownotes-message-service\n\nAuthor: Martin Stoffers\nEmail: Dr4k3\@shownot.es\nJabber: Dr4k3\@fastreboot.de\n\nContributers:\n\n Simon Waldherr\n Email:  SimonWaldherr\@shownot.es\n Jabber: SimonWaldherr\@jabber.shownot.es\n\n\nThis program is published under the terms of GPLv2 and comes with no warranty.\nhttp://www.gnu.org/licenses/gpl-2.0.txt";
+    $msg = "Shownotes Message Service\n=========================\n\nSource: https://github.com/shownotes/shownotes-message-service\n\nAuthor: Martin Stoffers\nEmail: Dr4k3\@shownot.es\nJabber: Dr4k3\@fastreboot.de\n\nContributers:\n\n Simon Waldherr\n Email:  Simon\@shownot.es\n Jabber: SimonWaldherr\@jabber.shownot.es\n\n\nThis program is published under the terms of GPLv2 and comes with no warranty.\nhttp://www.gnu.org/licenses/gpl-2.0.txt";
 }
 
 # help
