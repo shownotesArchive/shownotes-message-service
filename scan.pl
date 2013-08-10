@@ -7,20 +7,20 @@ use warnings;
 use utf8;
 
 use Config::Simple;
+use File::Basename;
 
 use DBI;
-
-#use IO::File;
 
 use LWP::Simple;
 use JSON;
 
 # make a new config reader object
-my $cfg = new Config::Simple('sms.config');
-my $fileprefix = $cfg->param('directory');
+my $currentpath = dirname(__FILE__);
+my $cfg = new Config::Simple("$currentpath/sms.config");
+my $programmpath = $cfg->param('directory');
 
 # connect to database
-my $dbh = DBI->connect("dbi:SQLite:dbname=$fileprefix/data.db",
+my $dbh = DBI->connect("dbi:SQLite:dbname=$programmpath/data.db",
                        "",
                        "",
                        {RaiseError => 1}, #Exceptions instead of error
