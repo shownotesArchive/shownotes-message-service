@@ -122,12 +122,12 @@ sub message {
 
 # about
 sub about {
-    $msg = "Shownotes Message Service\n=========================\n\nAuthor: Martin Stoffers\nEmail:  Dr4k3\@shownot.es\nSource: https://github.com/shownotes/shownotes-message-service\n\nContributers: SimonWaldherr\n\nThis program is published under the terms of GPLv2 and comes with no warranty.\nhttp://www.gnu.org/licenses/gpl-2.0.txt";
+    $msg = "Shownotes Message Service\n=========================\n\nSource: https://github.com/shownotes/shownotes-message-service\n\nAuthor: Martin Stoffers\nEmail: Dr4k3\@shownot.es\nJabber: Dr4k3\@fastreboot.de\n\nContributers:\n\n Simon Waldherr\n Email:  SimonWaldherr\@shownot.es\n Jabber: SimonWaldherr\@jabber.shownot.es\n\n\nThis program is published under the terms of GPLv2 and comes with no warranty.\nhttp://www.gnu.org/licenses/gpl-2.0.txt";
 }
 
 # help
 sub printhelp {
-    $msg = "list - Get a list of podcasts\nreg <podcast> - Subscribe to a podcast notification\nreglist - Get a list of all your subscribtions\nunreg <podcast | *> - Unsubscribe a podcast notification\nabout - About the bot";
+    $msg = "list - Get a list of podcasts\n\nreg < podcast > - Subscribe to a podcast notification\n\nreglist - Get a list of all your subscribtions\n\nunreg < podcast | * > - Unsubscribe a podcast notification\n\nnotify < ON | OFF > - Get notifications about new showpads on http://pad.shownot.es\n\nabout - About the bot";
 }
 
 # list all podcasts
