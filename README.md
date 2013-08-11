@@ -1,6 +1,6 @@
 # Shownotes Message Service
 
-A simple jabber notification service for live podcasts. Based upon the data of [hoersuppe.de](http://hoersuppe.de "hoersuppe.de") from [@eazyliving](https://github.com/eazyliving "@eazyliving").
+A simple jabber notification service for live podcast events. Based upon the data of [hoersuppe.de](http://hoersuppe.de "hoersuppe.de") from [@eazyliving](https://github.com/eazyliving "@eazyliving").
 <br>
 <br>
 **Give it a try** but beware the service is under heavy development. :) 
@@ -12,9 +12,10 @@ bot@jabber.shownot.es
 # Available commands
 ```
 list - Get a list of podcasts you could subscribe
-reg <podcast> - Subscribe to a podcast notification
+reg < podcast > - Subscribe to a podcast notification
 reglist - Get a list of all your subscription
-unreg <podcast | all> - Unsubscribe a podcast notifcation
+unreg <podcast | * > - Unsubscribe a podcast notifcation
+notify < ON | OFF > - Get notifications about new showpads on http://pad.shownot.es
 ```
 
 # Setup
