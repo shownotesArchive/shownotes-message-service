@@ -25,6 +25,7 @@ unreg <podcast | all> - Unsubscribe a podcast notifcation
 
 ## Perl modules
 
+* Log::Log4perl
 * Config::Simple
 * POSIX
 * File::Basename
