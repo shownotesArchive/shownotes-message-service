@@ -6,6 +6,8 @@ use strict;
 use warnings;
 use utf8;
 
+use Log::Log4perl qw(:easy);
+
 use POSIX;
 use Data::Dumper;
 use Config::Simple;
@@ -17,10 +19,14 @@ use Net::XMPP;
 use LWP::Simple;
 use JSON;
 
+
 # make a new config reader object
 my $currentpath = dirname(__FILE__);
 my $cfg = new Config::Simple("$currentpath/sms.config");
 my $programpath = $cfg->param('directory');
+
+# Log config
+Log::Log4perl->init("$currentpath/logging.conf");
 
 # connect to database
 my $dbh = DBI->connect("dbi:SQLite:dbname=$programpath/data.db",
@@ -33,6 +39,7 @@ my $dbh = DBI->connect("dbi:SQLite:dbname=$programpath/data.db",
 my $json = JSON->new->allow_nonref;
 
 # get JSON via LWP and decode it to hash
+INFO("Get lives from hoersuppe");
 my $rawdata = get("http://hoersuppe.de/api/?action=getLive&dateStart=".getdate()."&dateEnd=".getdate());
 my $live = $json->decode( $rawdata );
 
@@ -41,7 +48,9 @@ my $my = $live->{"data"};
 foreach my $livepod (@$my){
     my $podslug = $livepod->{"podcast"};
     
-    my $sth = $dbh->prepare( "SELECT slug FROM podcasts WHERE slug LIKE \'$podslug\'" );
+    DEBUG("Checking $podslug");
+    
+    my $sth = $dbh->prepare( "SELECT slug FROM podcasts WHERE slug LIKE '$podslug'" );
     $sth->execute();
           
     if(defined $sth->fetchrow_array()) {
@@ -59,8 +68,10 @@ foreach my $livepod (@$my){
         # if podcast is in range search for subsribers -- debug with <=
         if ($livehour == (gethour()+1)) {   
 
+            INFO("$podslug is in range");
+            
             #print "Search subscribers for ".$podslug."\n";
-            my $sth = $dbh->prepare( "SELECT jid FROM subscriptions WHERE slug LIKE \'$podslug\'");  
+            my $sth = $dbh->prepare( "SELECT jid FROM subscriptions WHERE slug LIKE '$podslug'");  
             $sth->execute();
 
             my $account;
@@ -82,7 +93,7 @@ foreach my $livepod (@$my){
                 
                 $con->PresenceSend(show=>'available');
 
-                print "Send notification about $podslug to $account\n";
+                INFO("Send notification about $podslug to $account\n");
 
                 # create message
                 my $msg = $podslug." starts at ".$livetime."\nStream: $streamurl\nSite: $url";
