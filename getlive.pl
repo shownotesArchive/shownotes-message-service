@@ -26,7 +26,7 @@ my $cfg = new Config::Simple("$currentpath/sms.config");
 my $programpath = $cfg->param('directory');
 
 # Log config
-Log::Log4perl->init("$currentpath/logging.conf");
+Log::Log4perl->init("$currentpath/logging.config");
 
 # connect to database
 my $dbh = DBI->connect("dbi:SQLite:dbname=$programpath/data.db",
