@@ -6,6 +6,8 @@ use strict;
 use warnings;
 use utf8;
 
+use Log::Log4perl qw(:easy);
+
 use Config::Simple;
 use File::Basename;
 
@@ -18,6 +20,9 @@ use JSON;
 my $currentpath = dirname(__FILE__);
 my $cfg = new Config::Simple("$currentpath/sms.config");
 my $programmpath = $cfg->param('directory');
+
+# Log config
+Log::Log4perl->init("$currentpath/logging.config");
 
 # connect to database
 my $dbh = DBI->connect("dbi:SQLite:dbname=$programmpath/data.db",
@@ -36,6 +41,7 @@ $dbh->do("CREATE TABLE IF NOT EXISTS podcasts(
 my $json = JSON->new->allow_nonref;
 
 # get JSON via LWP and decode it to hash
+INFO("Get slugs from hoersuppe");
 my $rawdata = get("http://hoersuppe.de/api/?action=getPodcasts");
 my $podcast_data = $json->decode( $rawdata );
 
@@ -51,7 +57,7 @@ foreach my $podcast (@$podcasts){
         $sth->execute();
               
         if(defined $sth->fetchrow_array()){
-            print "\t- Podcast ".$podslug." is in database\n";
+            DEBUG("\t- Podcast ".$podslug." is in database\n");
         }
         else{
             my $rawdata_info = get("http://hoersuppe.de/api/?action=getPodcastData&podcast=$podslug");
@@ -59,7 +65,7 @@ foreach my $podcast (@$podcasts){
             
             if($podcast_info->{"data"}->{"obsolete"} ne "1"){
                 $dbh->do("INSERT INTO podcasts VALUES('$podslug','$podtitle')");
-                print "\t+ Podcast ".$podslug." created\n";
+            INFO("\t+ Podcast ".$podslug." created\n");
             }
         }
         $sth->finish();
