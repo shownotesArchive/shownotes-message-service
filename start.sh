@@ -10,6 +10,12 @@ fi
 # check directory in config file
 dire=$(cat sms.config | grep directory | perl -n -e'm~directory\s+([\w+|/]+)~;print $1');
 
+# make logs directory
+if [ ! -e "logs" ]; then
+    mkdir logs;
+fi
+
+# make database directory and create database file
 if [ ! -e "$dire" ]; then
     mkdir $dire;
     cd $dire;
