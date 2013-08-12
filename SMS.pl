@@ -6,8 +6,11 @@ use strict;
 use warnings;
 use utf8;
 
+use Log::Log4perl qw(:easy);
+
 use Data::Dumper;
 use Config::Simple;
+use File::Basename;
 
 use DBI;
 
@@ -16,12 +19,16 @@ use LWP::Simple;
 use JSON;
 
 # make a new config config object
-my $cfg = new Config::Simple('sms.config');
+my $currentpath = dirname(__FILE__);
+my $cfg = new Config::Simple("$currentpath/sms.config");
 
 # some global variables
-my $msg = "";
 my $programpath = $cfg->param('directory');
 my $account = '';
+my $msg = "";
+
+# Log config
+Log::Log4perl->init("$currentpath/logging.config");
 
 # connect to database
 my $dbh = DBI->connect("dbi:SQLite:dbname=$programpath/data.db",
@@ -74,7 +81,8 @@ $con->Execute(  hostname=>$cfg->param('server'),
 
 # status update callback
 sub send_status {
-    print "\tAuthenticated\n\n";
+    INFO("Authenticated");
+    print "Authenticated - Service is running";
     $con->PresenceSend(show => "chat");
 }
 
@@ -90,10 +98,9 @@ sub message {
     $jid =~ /(.+@.+\.\w+)\/.+/;
     $account = lc $1;
     
-    print "\n";
-    print "    Event at: ".localtime(time).":\n";
-    print "Message from: ".$account."\n";
-    print "        Body: ".$body."\n";
+    INFO("Event at: ".localtime(time));
+    INFO("Message from: $account");
+    INFO("Body: $body");
 
     # command selection
     if($body eq 'list') {
@@ -213,7 +220,7 @@ sub unregister {
             
         # set message
         $msg = "Unsubscribed from all podcast notifications";
-        print "        ".$account." all podcast notifications\n";
+        INFO("Unsubscribed $account from all podcast notifications");
     }
     else {
         $dbh->do("DELETE FROM subscriptions
@@ -223,7 +230,7 @@ sub unregister {
             
         # set message
         $msg = $podslug." unsubscribed";
-        print "        ".$podslug." unsubscribed for $account\n";
+        INFO("$podslug unsubscribed for $account");
     }
 }
 
@@ -259,12 +266,12 @@ sub register {
             
         # set message
         $msg = $podslug." registered to ".$account;
-        print "        ".$podslug." registered for $account\n";
+        INFO("$podslug registered for $account");
         
         }
         else{
             $msg = $podslug." not in list";
-            print "        Register failed for $podslug\n";
+            INFO("Register failed for $podslug");
             $sth->finish();
         }
 }
