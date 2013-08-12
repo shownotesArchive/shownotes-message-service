@@ -4,10 +4,14 @@ use strict;
 use warnings;
 use utf8;
 
+use Log::Log4perl qw(:easy);
+
 use CGI '3.30', ();
 use CGI::Carp qw( fatalsToBrowser );
 
 use Config::Simple;
+use File::Basename;
+
 use DBI;
 
 use Net::XMPP;
@@ -18,10 +22,14 @@ use String::CRC32;
 my $apititle = 'Shownotes Message Service REST-API';
 
 # make a new config config object
-my $cfg = new Config::Simple('../sms.config');
+my $currentpath = dirname(__FILE__);
+my $cfg = new Config::Simple("$currentpath/../sms.config");
 
 # some global variables
 my $programpath = $cfg->param('directory');
+
+# Log config
+Log::Log4perl->init("$currentpath/../logging.config");
 
 # connect to database
 my $dbh = DBI->connect("dbi:SQLite:dbname=$programpath/data.db",
@@ -85,6 +93,7 @@ eval {
 
         if(defined $sth){
                
+            INFO("Send notifcation about new pad: $pad");
             while(my @jid = $sth->fetchrow_array()){
                 
                 # Make a new Jabber object an connect
@@ -142,6 +151,7 @@ eval {
             # if - process
             if(defined $sth->fetchrow_array()) {
                 
+                INFO("Alter subscriptions for $jid");
                 foreach my $slugs ($subscribers->{$key}) {
                     
                     my $timestamp;
@@ -234,6 +244,7 @@ eval {
         }
         else{
             
+            INFO("New registration process for $jid");
             # insert subscriber into db 
             $dbh->do("INSERT INTO subscribers 
                         VALUES('$jid', '$remotehost', '$token', '$challenge')
@@ -304,6 +315,7 @@ eval {
                     ");
 
             print $cgi->header(-status=>200, -type=>'text/html; charset=UTF-8');
+            INFO("Registration for $jid successful");
         }
         else{
             print $cgi->header(-status=>409, -type=>'text/html; charset=UTF-8');
@@ -347,6 +359,7 @@ eval {
                         ");
 
                 print $cgi->header(-status=>200, -type=>'text/html; charset=UTF-8');
+                INFO("Altered showpad notifcation for $jid");
             }
             else{
                 print $cgi->header(-status=>400, -type=>'text/html; charset=UTF-8');
@@ -373,6 +386,8 @@ eval {
     # Get all slugs with count of subscribers and title
     GET qr{^/slug$} => sub {
         
+        my $remotehost = $cgi->remote_host();
+        
         my $slugs = $dbh->prepare("SELECT DISTINCT slug,title FROM podcasts
                                         ORDER BY slug ASC
                                  ");  
@@ -395,6 +410,7 @@ eval {
             chop($out); 
             print $cgi->header(-status=>200, -type=>'application/json; charset=UTF-8');
             print $out."}}";
+            INFO("GET all slugs from $remotehost");
         }
         else {
             print $cgi->header(-status=>204, -type=>'text/html; charset=UTF-8');
@@ -425,6 +441,7 @@ eval {
             
             print $cgi->header(-status=>200, -type=>'application/json; charset=UTF-8');
             print $out."}";
+            INFO("GET all subscribers to showpad notification for $remotehost");
         }
         else {
             print $cgi->header(-status=>204, -type=>'text/html; charset=UTF-8');
@@ -453,6 +470,7 @@ eval {
                 
             print $cgi->header(-status=>200, -type=>'application/json; charset=UTF-8');
             print $out;
+            INFO("GET infos about $jid about showpad notification for $remotehost");
         }
         else{
                 print $cgi->header(-status=>204, -type=>'text/html; charset=UTF-8');
@@ -492,6 +510,7 @@ eval {
             
             print $cgi->header(-status=>200, -type=>'application/json; charset=UTF-8');
             print $out."}";
+            INFO("GET infos about all subscriptions by jid for $remotehost");
         }
         else {
             print $cgi->header(-status=>204, -type=>'text/html; charset=UTF-8');
@@ -525,6 +544,7 @@ eval {
             
             print $cgi->header(-status=>200, -type=>'application/json; charset=UTF-8');
             print $out."]}";
+            INFO("GET infos about all subscriptions on $jid for $remotehost");
         }  
         else {
             print $cgi->header(-status=>204, -type=>'text/html; charset=UTF-8');
@@ -567,6 +587,7 @@ eval {
             }       
             chop($out); 
             print $out."}";
+            INFO("GET infos about all subscriptions by slug for $remotehost");
         }
         else {
             print $cgi->header(-status=>204, -type=>'text/html; charset=UTF-8');
@@ -599,6 +620,7 @@ eval {
 
             print $cgi->header(-status=>200, -type=>'application/json; charset=UTF-8');
             print $out."]}";
+            INFO("GET infos about all subscriptions on $1 for $remotehost");
         }  
         else {
             print $cgi->header(-status=>204, -type=>'text/html; charset=UTF-8');
