@@ -13,6 +13,7 @@ dire=$(cat sms.config | grep directory | perl -n -e'm~directory\s+([\w+|/]+)~;pr
 # make logs directory
 if [ ! -e "logs" ]; then
     mkdir logs;
+    chmod 777 logs/;
 fi
 
 # make database directory and create database file
