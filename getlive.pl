@@ -19,20 +19,20 @@ use Net::XMPP;
 use LWP::Simple;
 use JSON;
 
-
 # make a new config reader object
 my $currentpath = dirname(__FILE__);
-my $cfg = new Config::Simple("$currentpath/sms.config");
+my $cfg         = new Config::Simple("$currentpath/sms.config");
 my $programpath = $cfg->param('directory');
 
 # Log config
 Log::Log4perl->init("$currentpath/logging.config");
 
 # connect to database
-my $dbh = DBI->connect("dbi:SQLite:dbname=$programpath/data.db",
-                       "",
-                       "",
-                       {RaiseError => 1}, #Exceptions instead of error
+my $dbh = DBI->connect(
+    "dbi:SQLite:dbname=$programpath/data.db",
+    "",
+    "",
+    { RaiseError => 1 },    #Exceptions instead of error
 ) or die $DBI::errstr;
 
 # make a JSON parser object
@@ -40,24 +40,24 @@ my $json = JSON->new->allow_nonref;
 
 # get JSON via LWP and decode it to hash
 INFO("Get lives from hoersuppe");
-my $rawdata = get("http://hoersuppe.de/api/?action=getLive&dateStart=".getdate()."&dateEnd=".getdate());
-my $live = $json->decode( $rawdata );
+my $rawdata = get( "http://hoersuppe.de/api/?action=getLive&dateStart=" . getdate() . "&dateEnd=" . getdate() );
+my $live    = $json->decode($rawdata);
 
 # get slugs from data
 my $my = $live->{"data"};
-foreach my $livepod (@$my){
+foreach my $livepod (@$my) {
     my $podslug = $livepod->{"podcast"};
-    
+
     DEBUG("Checking $podslug");
-    
-    my $sth = $dbh->prepare( "SELECT slug FROM podcasts WHERE slug LIKE '$podslug'" );
+
+    my $sth = $dbh->prepare("SELECT slug FROM podcasts WHERE slug LIKE '$podslug'");
     $sth->execute();
-          
-    if(defined $sth->fetchrow_array()) {
+
+    if ( defined $sth->fetchrow_array() ) {
         $sth->finish();
 
-        my $live = $livepod->{"livedate"};
-        my $url = $livepod->{"url"};
+        my $live      = $livepod->{"livedate"};
+        my $url       = $livepod->{"url"};
         my $streamurl = $livepod->{"streamurl"};
 
         $live =~ m/((\d+)-(\d+)-(\d+)) ((\d\d):(\d\d):\d\d)/;
@@ -66,51 +66,60 @@ foreach my $livepod (@$my){
         my $livehour = $6;
 
         # if podcast is in range search for subsribers -- debug with <=
-        if ($livehour == (gethour()+1)) {   
+        if ( $livehour == ( gethour() + 1 ) ) {
 
             INFO("$podslug is in range");
-            
+
             #print "Search subscribers for ".$podslug."\n";
-            my $sth = $dbh->prepare( "SELECT jid FROM subscriptions WHERE slug LIKE '$podslug'");  
+            my $sth = $dbh->prepare("SELECT jid FROM subscriptions WHERE slug LIKE '$podslug'");
             $sth->execute();
 
             my $account;
             my $con = new Net::XMPP::Client();
-            while ($account = $sth->fetchrow_array()) {
+            while ( $account = $sth->fetchrow_array() ) {
 
                 # Make a new Jabber object an connect
-                my $status = $con->Connect(hostname => $cfg->param('server'),
-                                           connectiontype => 'tcpip',
-                                           tls => 0);
-                die('ERROR: XMPP connection failed') if ! defined($status);
+                my $status = $con->Connect(
+                    hostname       => $cfg->param('server'),
+                    connectiontype => 'tcpip',
+                    tls            => 0
+                );
+                die('ERROR: XMPP connection failed') if !defined($status);
 
                 # authenticate
-                my @result = $con->AuthSend(hostname =>$cfg->param('server'), 
-                                            username =>$cfg->param('username'),
-                                            password =>$cfg->param('password'),
-                                            resource => $cfg->param('inforesource'));
+                my @result = $con->AuthSend(
+                    hostname => $cfg->param('server'),
+                    username => $cfg->param('username'),
+                    password => $cfg->param('password'),
+                    resource => $cfg->param('inforesource')
+                );
                 die('ERROR: XMPP authentication failed') if $result[0] ne 'ok';
-                
-                $con->PresenceSend(show=>'available');
+
+                $con->PresenceSend( show => 'available' );
 
                 INFO("Send notification about $podslug to $account\n");
 
                 # create message
-                my $msg = $podslug." starts at ".$livetime."\nStream: $streamurl\nSite: $url";
+                my $msg = "$podslug starts at $livetime\nStream: $streamurl\nSite: $url";
 
                 # send a message
                 # type = "headline" for penetrant notfication on client-side
-                die('ERROR: XMPP message failed') if ($con->MessageSend(to => $account,
-                                                                            type =>'chat',
-                                                                            body => $msg) != 0);
-   
+                die('ERROR: XMPP message failed')
+                  if (
+                    $con->MessageSend(
+                        to   => $account,
+                        type => 'chat',
+                        body => $msg
+                    ) != 0
+                  );
+
             }
             $con->Disconnect();
             $sth->finish();
         }
 
     }
-}    
+}
 
 # get formated date
 sub getdate {
