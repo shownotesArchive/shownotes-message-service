@@ -15,7 +15,6 @@ use File::Basename;
 use DBI;
 
 use Net::XMPP;
-use LWP::Simple;
 use JSON;
 
 # make a new config config object
