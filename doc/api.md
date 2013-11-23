@@ -48,8 +48,11 @@ HTTP Status: 204 No Content
 
 Content-Type: application/JSON
 
-Data: {} 
+Data: 
 
+```JSON
+{} 
+```
 
 ### Get all subscribers of showpad notification
 
@@ -198,7 +201,11 @@ HTTP Status: 204 No Content
 
 Content-Type: application/JSON
 
-Data: {}
+Data:
+
+```JSON
+{} 
+```
 
 ### Get all subscribed jids ordered by slugs
 
