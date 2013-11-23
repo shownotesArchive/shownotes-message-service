@@ -609,7 +609,8 @@ eval {
             INFO("GET infos about all subscriptions on $jid for $remotehost");
         }
         else {
-            print $cgi->header( -status => 204, -type => 'text/html; charset=UTF-8' );
+            print $cgi->header( -status => 200, -type => 'application/json; charset=UTF-8' );
+            print "{}";
             INFO("No subscriptions for $jid for $remotehost");
         }
     };
@@ -656,7 +657,9 @@ eval {
             INFO("GET infos about all subscriptions by slug for $remotehost");
         }
         else {
-            print $cgi->header( -status => 204, -type => 'text/html; charset=UTF-8' );
+            #print $cgi->header( -status => 204, -type => 'text/html; charset=UTF-8' );
+            print $cgi->header( -status => 204, -type => 'application/json; charset=UTF-8' );
+            print "{}";
         }
 
         $slugs->finish();
