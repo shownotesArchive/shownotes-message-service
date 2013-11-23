@@ -46,9 +46,9 @@ or, if there is no entry
 
 HTTP Status: 204 No Content
 
-Content-Type: text/html
+Content-Type: application/JSON
 
-Data: -
+Data: {} 
 
 
 ### Get all subscribers of showpad notification
@@ -196,9 +196,9 @@ or, if there is no entry
 
 HTTP Status: 204 No Content
 
-Content-Type: text/html
+Content-Type: application/JSON
 
-Data: -
+Data: {}
 
 ### Get all subscribed jids ordered by slugs
 
