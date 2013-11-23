@@ -172,7 +172,7 @@ Data:
 
 ```JSON
 {
-    "anon@example.org":[    
+    "anon@example.org":{    
         "1337kultur":{
             "title":"1337-Kultur"
         },
@@ -188,7 +188,7 @@ Data:
         "einschlafen":{
             "title":"Einschlafen Podcast"
         }
-    ]
+    }
 }
 ```
 
