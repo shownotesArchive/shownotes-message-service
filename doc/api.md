@@ -173,11 +173,21 @@ Data:
 ```JSON
 {
     "anon@example.org":[    
-        "1337kultur",
-        "alternativlos",
-        "binaergewitter",
-        "chaosradio",
-        "einschlafen"
+        "1337kultur":{
+            "title":"1337-Kultur"
+        },
+        "alternativlos":{
+            "title":"Alternativlos"
+        },
+        "binaergewitter":{
+            "title":"Binärgewitter Talk"
+        },
+        "chaosradio":{
+            "title":"Chaosradio"
+        },
+        "einschlafen":{
+            "title":"Einschlafen Podcast"
+        }
     ]
 }
 ```

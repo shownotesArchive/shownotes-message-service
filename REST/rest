@@ -36,7 +36,7 @@ my $dbh = DBI->connect(
     "dbi:SQLite:dbname=$programpath/data.db",
     "",
     "",
-    { RaiseError => 1 },    #Exceptions instead of error
+    #{ RaiseError => 1 },    #Exceptions instead of error
 ) or die $DBI::errstr;
 
 my $cgi = CGI->new;
@@ -98,6 +98,7 @@ eval {
         if ( defined $sth ) {
 
             INFO("Send notifcation about new pad: $pad");
+            INFO("Link to new pad: $link");
             while ( my @jid = $sth->fetchrow_array() ) {
 
                 # Make a new Jabber object an connect
@@ -262,11 +263,16 @@ eval {
         if ( defined $sth->fetchrow_array() ) {
 
             # nothing to do ;)
+            INFO("User was registered");
             print $cgi->header( -status => 409, -type => 'text/html; charset=UTF-8' );
         }
         else {
 
             INFO("New registration process for $jid");
+
+            INFO(" $remotehost");
+            INFO(" $token");
+            INFO(" $challenge");
 
             # insert subscriber into db
             $dbh->do(
@@ -280,7 +286,7 @@ eval {
                         VALUES('$jid',0)
                 "
             );
-
+            
             # Make a new Jabber object an connect
             my $con    = new Net::XMPP::Client();
             my $status = $con->Connect(
@@ -315,9 +321,11 @@ eval {
             );
 
             $con->Disconnect();
+            INFO("Send token to user");
             print $cgi->header( -status => 200, -type => 'text/html; charset=UTF-8' );
         }
         $sth->finish();
+        INFO("Exit routine");
     };
 
     # PUT token to complete registration of a new user
@@ -354,6 +362,7 @@ eval {
             );
 
             print $cgi->header( -status => 200, -type => 'text/html; charset=UTF-8' );
+
             INFO("Registration for $jid successful");
         }
         else {
@@ -575,8 +584,9 @@ eval {
         my $remotehost = $cgi->remote_host();
 
         my $res = $dbh->selectall_arrayref(
-            "SELECT slug FROM subscriptions 
+            "SELECT slug,title FROM subscriptions 
                                                 JOIN subscribers USING (jid)
+                                                JOIN podcasts USING (slug)
                                                 WHERE jid LIKE '$jid'
                                                 AND servicehost LIKE '$remotehost'
                                                 AND token LIKE 'OK'
@@ -586,19 +596,21 @@ eval {
 
         if (@$res) {
 
-            my $out = "{\"$jid\":[";
+            my $out = "{\"$jid\":{";
             foreach my $row (@$res) {
-                my ($slug) = @$row;
-                $out = $out . "\"$slug\",";
+                my ($slug,$title) = @$row;
+                #$out = $out . "\"$slug\",";
+                $out = $out . "\"$slug\":{\"title\":\"$title\"},";
             }
             chop($out);
 
             print $cgi->header( -status => 200, -type => 'application/json; charset=UTF-8' );
-            print $out. "]}";
+            print $out. "}}";
             INFO("GET infos about all subscriptions on $jid for $remotehost");
         }
         else {
             print $cgi->header( -status => 204, -type => 'text/html; charset=UTF-8' );
+            INFO("No subscriptions for $jid for $remotehost");
         }
     };
 
