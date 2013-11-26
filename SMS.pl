@@ -25,7 +25,7 @@ my $cfg         = new Config::Simple("$currentpath/sms.config");
 my $programpath = $cfg->param('directory');
 my $account     = '';
 my $msg         = "";
-
+my $syn         = 0;
 # Log config
 Log::Log4perl->init("$currentpath/logging.config");
 
@@ -132,6 +132,16 @@ sub message {
 
         # do nothing...
         # workaround for empty message bodys
+    }
+    elsif ($body eq 'syn') {
+        $msg = "SYN-ACK";
+        $syn = 1;
+        print "$account found the easteregg!";
+    }
+    elsif ($body eq 'ack' and $syn == 1) {
+        #$msg = "Easter egg connection established\nCongratulations!";
+        $syn = 0;
+        about();
     }
     else {
         printhelp();
