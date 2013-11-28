@@ -445,7 +445,7 @@ eval {
 
         if ( defined $slugs ) {
 
-            my $out = "{\"slugs\":{";
+            my $out = "{";
             while ( my @slug = $slugs->fetchrow_array() ) {
 
                 my $count = $dbh->prepare(
@@ -461,7 +461,7 @@ eval {
             }
             chop($out);
             print $cgi->header( -status => 200, -type => 'application/json; charset=UTF-8' );
-            print $out. "}}";
+            print $out. "}";
             INFO("GET all slugs from $remotehost");
         }
         else {
@@ -498,6 +498,8 @@ eval {
         }
         else {
             print $cgi->header( -status => 204, -type => 'text/html; charset=UTF-8' );
+            my $out = "{}";
+            print $out;
         }
     };
 
@@ -520,7 +522,7 @@ eval {
         my $info = $sth->fetchrow_array();
         if ( defined $info ) {
 
-            my $out = "{\"$jid\":{\"info\":\"$info\"}}";
+            my $out = "{\"info\":\"$info\"}";
 
             print $cgi->header( -status => 200, -type => 'application/json; charset=UTF-8' );
             print $out;
@@ -528,6 +530,8 @@ eval {
         }
         else {
             print $cgi->header( -status => 204, -type => 'text/html; charset=UTF-8' );
+            my $out = "{}";
+            print $out;
         }
         $sth->finish();
     };
@@ -596,16 +600,15 @@ eval {
 
         if (@$res) {
 
-            my $out = "{\"$jid\":{";
+            my $out = "{";
             foreach my $row (@$res) {
                 my ($slug,$title) = @$row;
-                #$out = $out . "\"$slug\",";
                 $out = $out . "\"$slug\":{\"title\":\"$title\"},";
             }
             chop($out);
 
             print $cgi->header( -status => 200, -type => 'application/json; charset=UTF-8' );
-            print $out. "}}";
+            print $out . "}";
             INFO("GET infos about all subscriptions on $jid for $remotehost");
         }
         else {

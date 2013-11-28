@@ -28,17 +28,15 @@ Data:
 
 ```JSON
 {
-    "slugs":{
-        "wrint":{
-            "subscriptions":1337,
-            "title":"Wrint"
-        },
-        "cre":{
-            "subscriptions":23,
-            "title":"CRE"
-        }
-        ...
-    }
+    "wrint":{
+        "subscriptions":1337,
+        "title":"Wrint"
+    },
+    "cre":{
+        "subscriptions":23,
+        "title":"CRE"
+    },
+    ...
 }
 ```
 
@@ -85,7 +83,11 @@ HTTP Status: 204 No Content
 
 Content-Type: text/html
 
-Data: -
+Data:
+
+```JSON
+{} 
+```
 
 
 ### Get a specific subscriber for showpad notification by jid
@@ -104,9 +106,7 @@ Data:
 
 ```JSON
 {
-    "anon@example.org":{
-        "info":1
-    }
+    "info":1
 }
 ```
 
@@ -116,7 +116,11 @@ HTTP Status: 204 No Content
 
 Content-Type: text/html
 
-Data: -
+Data:
+
+```JSON
+{} 
+```
 
 ### Get all subscriptions ordered by jid
 
@@ -175,22 +179,20 @@ Data:
 
 ```JSON
 {
-    "anon@example.org":{    
-        "1337kultur":{
-            "title":"1337-Kultur"
-        },
-        "alternativlos":{
-            "title":"Alternativlos"
-        },
-        "binaergewitter":{
-            "title":"Binärgewitter Talk"
-        },
-        "chaosradio":{
-            "title":"Chaosradio"
-        },
-        "einschlafen":{
-            "title":"Einschlafen Podcast"
-        }
+    "1337kultur":{
+        "title":"1337-Kultur"
+    },
+    "alternativlos":{
+        "title":"Alternativlos"
+    },
+    "binaergewitter":{
+        "title":"Binärgewitter Talk"
+    },
+    "chaosradio":{
+        "title":"Chaosradio"
+    },
+    "einschlafen":{
+        "title":"Einschlafen Podcast"
     }
 }
 ```
