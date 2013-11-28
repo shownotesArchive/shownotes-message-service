@@ -19,17 +19,15 @@
 <p>Content-Type: application/JSON</p>
 <p>Data:</p>
 <pre class="sourceCode JSON"><code class="sourceCode json">{
-    <span class="dt">&quot;slugs&quot;</span>:{
-        <span class="dt">&quot;wrint&quot;</span>:{
-            <span class="dt">&quot;subscriptions&quot;</span>:<span class="dv">1337</span>,
-            <span class="dt">&quot;title&quot;</span>:<span class="st">&quot;Wrint&quot;</span>
-        },
-        <span class="dt">&quot;cre&quot;</span>:{
-            <span class="dt">&quot;subscriptions&quot;</span>:<span class="dv">23</span>,
-            <span class="dt">&quot;title&quot;</span>:<span class="st">&quot;CRE&quot;</span>
-        }
-        <span class="er">...</span>
-    }
+    <span class="dt">&quot;wrint&quot;</span>:{
+        <span class="dt">&quot;subscriptions&quot;</span>:<span class="dv">1337</span>,
+        <span class="dt">&quot;title&quot;</span>:<span class="st">&quot;Wrint&quot;</span>
+    },
+    <span class="dt">&quot;cre&quot;</span>:{
+        <span class="dt">&quot;subscriptions&quot;</span>:<span class="dv">23</span>,
+        <span class="dt">&quot;title&quot;</span>:<span class="st">&quot;CRE&quot;</span>
+    },
+    <span class="er">...</span>
 }</code></pre>
 <p>or, if there is no entry</p>
 <p>HTTP Status: 204 No Content</p>
@@ -57,7 +55,8 @@
 <p>or, if there is no subscriber at all</p>
 <p>HTTP Status: 204 No Content</p>
 <p>Content-Type: text/html</p>
-<p>Data: -</p>
+<p>Data:</p>
+<pre class="sourceCode JSON"><code class="sourceCode json">{} </code></pre>
 <h3 id="get-a-specific-subscriber-for-showpad-notification-by-jid">Get a specific subscriber for showpad notification by jid</h3>
 <ul>
 <li>URI: http://example.org/rest/showpad/{jid}</li>
@@ -69,14 +68,13 @@
 <p>Content-Type: application/JSON</p>
 <p>Data:</p>
 <pre class="sourceCode JSON"><code class="sourceCode json">{
-    <span class="dt">&quot;anon@example.org&quot;</span>:{
-        <span class="dt">&quot;info&quot;</span>:<span class="dv">1</span>
-    }
+    <span class="dt">&quot;info&quot;</span>:<span class="dv">1</span>
 }</code></pre>
 <p>or, if no entry</p>
 <p>HTTP Status: 204 No Content</p>
 <p>Content-Type: text/html</p>
-<p>Data: -</p>
+<p>Data:</p>
+<pre class="sourceCode JSON"><code class="sourceCode json">{} </code></pre>
 <h3 id="get-all-subscriptions-ordered-by-jid">Get all subscriptions ordered by jid</h3>
 <ul>
 <li>URI: http://example.org/rest/subscription/jid</li>
@@ -118,22 +116,20 @@
 <p>Content-Type: application/JSON</p>
 <p>Data:</p>
 <pre class="sourceCode JSON"><code class="sourceCode json">{
-    <span class="dt">&quot;anon@example.org&quot;</span>:{    
-        <span class="dt">&quot;1337kultur&quot;</span>:{
-            <span class="dt">&quot;title&quot;</span>:<span class="st">&quot;1337-Kultur&quot;</span>
-        },
-        <span class="dt">&quot;alternativlos&quot;</span>:{
-            <span class="dt">&quot;title&quot;</span>:<span class="st">&quot;Alternativlos&quot;</span>
-        },
-        <span class="dt">&quot;binaergewitter&quot;</span>:{
-            <span class="dt">&quot;title&quot;</span>:<span class="st">&quot;Binärgewitter Talk&quot;</span>
-        },
-        <span class="dt">&quot;chaosradio&quot;</span>:{
-            <span class="dt">&quot;title&quot;</span>:<span class="st">&quot;Chaosradio&quot;</span>
-        },
-        <span class="dt">&quot;einschlafen&quot;</span>:{
-            <span class="dt">&quot;title&quot;</span>:<span class="st">&quot;Einschlafen Podcast&quot;</span>
-        }
+    <span class="dt">&quot;1337kultur&quot;</span>:{
+        <span class="dt">&quot;title&quot;</span>:<span class="st">&quot;1337-Kultur&quot;</span>
+    },
+    <span class="dt">&quot;alternativlos&quot;</span>:{
+        <span class="dt">&quot;title&quot;</span>:<span class="st">&quot;Alternativlos&quot;</span>
+    },
+    <span class="dt">&quot;binaergewitter&quot;</span>:{
+        <span class="dt">&quot;title&quot;</span>:<span class="st">&quot;Binärgewitter Talk&quot;</span>
+    },
+    <span class="dt">&quot;chaosradio&quot;</span>:{
+        <span class="dt">&quot;title&quot;</span>:<span class="st">&quot;Chaosradio&quot;</span>
+    },
+    <span class="dt">&quot;einschlafen&quot;</span>:{
+        <span class="dt">&quot;title&quot;</span>:<span class="st">&quot;Einschlafen Podcast&quot;</span>
     }
 }</code></pre>
 <p>or, if there is no entry</p>
