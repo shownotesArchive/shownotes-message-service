@@ -16,7 +16,7 @@
 <li>Auth: BASIC</li>
 </ul>
 <p>HTTP Status: 200 OK</p>
-<p>Content-Type: application/JSON</p>
+<p>Content-Type: application/json</p>
 <p>Data:</p>
 <pre class="sourceCode JSON"><code class="sourceCode json">{
     <span class="dt">&quot;wrint&quot;</span>:{
@@ -31,7 +31,7 @@
 }</code></pre>
 <p>or, if there is no entry</p>
 <p>HTTP Status: 204 No Content</p>
-<p>Content-Type: application/JSON</p>
+<p>Content-Type: application/json</p>
 <p>Data:</p>
 <pre class="sourceCode JSON"><code class="sourceCode json">{} </code></pre>
 <h3 id="get-all-subscribers-of-showpad-notification">Get all subscribers of showpad notification</h3>
@@ -42,7 +42,7 @@
 </ul>
 <h4 id="returns-2">Returns</h4>
 <p>HTTP Status: 200 OK</p>
-<p>Content-Type: application/JSON</p>
+<p>Content-Type: application/json</p>
 <p>Data:</p>
 <pre class="sourceCode JSON"><code class="sourceCode json">{
     <span class="dt">&quot;anon@example.org&quot;</span>:{
@@ -54,7 +54,7 @@
 }</code></pre>
 <p>or, if there is no subscriber at all</p>
 <p>HTTP Status: 204 No Content</p>
-<p>Content-Type: text/html</p>
+<p>Content-Type: application/json</p>
 <p>Data:</p>
 <pre class="sourceCode JSON"><code class="sourceCode json">{} </code></pre>
 <h3 id="get-a-specific-subscriber-for-showpad-notification-by-jid">Get a specific subscriber for showpad notification by jid</h3>
@@ -65,14 +65,14 @@
 </ul>
 <h4 id="returns-3">Returns</h4>
 <p>HTTP Status: 200 OK</p>
-<p>Content-Type: application/JSON</p>
+<p>Content-Type: application/json</p>
 <p>Data:</p>
 <pre class="sourceCode JSON"><code class="sourceCode json">{
     <span class="dt">&quot;info&quot;</span>:<span class="dv">1</span>
 }</code></pre>
 <p>or, if no entry</p>
 <p>HTTP Status: 204 No Content</p>
-<p>Content-Type: text/html</p>
+<p>Content-Type: application/json</p>
 <p>Data:</p>
 <pre class="sourceCode JSON"><code class="sourceCode json">{} </code></pre>
 <h3 id="get-all-subscriptions-ordered-by-jid">Get all subscriptions ordered by jid</h3>
@@ -83,7 +83,7 @@
 </ul>
 <h4 id="returns-4">Returns</h4>
 <p>HTTP Status: 200 OK</p>
-<p>Content-Type: application/JSON</p>
+<p>Content-Type: application/json</p>
 <p>Data:</p>
 <pre class="sourceCode JSON"><code class="sourceCode json">{
     <span class="dt">&quot;anon@example.org&quot;</span>:[    
@@ -103,8 +103,9 @@
 }</code></pre>
 <p>or, if there is no entry</p>
 <p>HTTP Status: 204 No Content</p>
-<p>Content-Type: text/html</p>
-<p>Data: -</p>
+<p>Content-Type: application/json</p>
+<p>Data:</p>
+<pre class="sourceCode JSON"><code class="sourceCode json">{} </code></pre>
 <h3 id="get-all-subscriptions-for-a-specific-jid">Get all subscriptions for a specific jid</h3>
 <ul>
 <li>URI: http://example.org/rest/subscription/jid/{jid}</li>
@@ -113,7 +114,7 @@
 </ul>
 <h4 id="returns-5">Returns</h4>
 <p>HTTP Status: 200 OK</p>
-<p>Content-Type: application/JSON</p>
+<p>Content-Type: application/json</p>
 <p>Data:</p>
 <pre class="sourceCode JSON"><code class="sourceCode json">{
     <span class="dt">&quot;1337kultur&quot;</span>:{
@@ -134,7 +135,7 @@
 }</code></pre>
 <p>or, if there is no entry</p>
 <p>HTTP Status: 204 No Content</p>
-<p>Content-Type: application/JSON</p>
+<p>Content-Type: application/json</p>
 <p>Data:</p>
 <pre class="sourceCode JSON"><code class="sourceCode json">{} </code></pre>
 <h3 id="get-all-subscribed-jids-ordered-by-slugs">Get all subscribed jids ordered by slugs</h3>
@@ -145,7 +146,7 @@
 </ul>
 <h4 id="returns-6">Returns</h4>
 <p>HTTP Status: 200 OK</p>
-<p>Content-Type: application/JSON</p>
+<p>Content-Type: application/json</p>
 <p>Data:</p>
 <pre class="sourceCode JSON"><code class="sourceCode json">{
     <span class="dt">&quot;1337kultur&quot;</span>:[
@@ -161,8 +162,9 @@
 }</code></pre>
 <p>or, if there is no entry</p>
 <p>HTTP Status: 204 No Content</p>
-<p>Content-Type: text/html</p>
-<p>Data: -</p>
+<p>Content-Type: application/json</p>
+<p>Data:</p>
+<pre class="sourceCode JSON"><code class="sourceCode json">{} </code></pre>
 <h3 id="get-all-subscribed-jids-from-a-specifc-slug">Get all subscribed jids from a specifc slug</h3>
 <h4 id="returns-7">Returns</h4>
 <ul>
@@ -171,7 +173,7 @@
 <li>Auth: BASIC</li>
 </ul>
 <p>HTTP Status: 200 OK</p>
-<p>Content-Type: application/JSON</p>
+<p>Content-Type: application/json</p>
 <p>Data:</p>
 <pre class="sourceCode JSON"><code class="sourceCode json">{
     <span class="dt">&quot;einschlafen&quot;</span>:[
@@ -181,8 +183,9 @@
 }</code></pre>
 <p>or, if there is no entry</p>
 <p>HTTP Status: 204 No Content</p>
-<p>Content-Type: text/html</p>
-<p>Data: -</p>
+<p>Content-Type: application/json</p>
+<p>Data:</p>
+<pre class="sourceCode JSON"><code class="sourceCode json">{} </code></pre>
 <h2 id="put-resources">PUT Resources</h2>
 <h3 id="register-a-new-user-to-the-service-by-putting-a-jid-and-a-challenge">Register a new user to the service by putting a jid and a challenge</h3>
 <ul>
