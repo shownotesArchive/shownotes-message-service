@@ -248,14 +248,12 @@ eval {
         my $challenge  = $$register{"challenge"};
         my $remotehost = $cgi->remote_host();
 
-        # generate CRC32 checksumm as token
-        my $token = crc32( time . $remotehost . $jid . $challenge );
-
-        # do nothing if user is registered by this service
+        # do nothing if user isn't registered from this service
         my $sth = $dbh->prepare(
             "SELECT jid,servicehost FROM subscribers 
                                     WHERE jid LIKE \'$jid\' 
                                     AND servicehost LIKE \'$remotehost\'
+                                    AND challenge LIKE \'$challenge\'
             "
         );
         $sth->execute();
@@ -416,6 +414,74 @@ eval {
             }
             $sth->finish();
         }
+    };
+
+    # PUT register a new user
+    PUT qr{^/unregister$} => sub {
+
+        # get JSON and decode it to hash
+        my @rawdata  = $cgi->param('PUTDATA');
+        my $unregister = JSON->new->utf8(1)->decode(@rawdata);
+
+        # get other values
+        my $jid        = lc $$unregister{"jid"};
+        my $challenge  = $$unregister{"challenge"};
+        my $remotehost = $cgi->remote_host();
+        my $counter;
+        my $count = $dbh->prepare(
+            "SELECT count(*) FROM subscriptions 
+                                  WHERE jid LIKE '$jid'
+            "
+        );
+        $count->execute();
+
+        my $counter = $count->fetchrow_array();
+
+        if ($counter == 1 ) {
+            INFO("Just registered over service");
+            # delete service entry and all subscriptions
+            
+            #delete subscriptions
+            $dbh->do(
+                "DELETE FROM subscriptions
+                        WHERE jid LIKE '$jid'
+                        AND slug LIKE '$podslug'
+                "
+            );
+
+            #delete subscriber entry
+            $dbh->do(
+                "DELETE FROM subscribers
+                        WHERE jid LIKE '$jid'
+                        AND servicehost LIKE '$remotehost'
+                        AND challenge LIKE '$challenge'
+                "
+            );
+            # set message
+            INFO("Unsubscribed $jid from service $remotehost");
+            print $cgi->header( -status => 200, -type => 'text/html; charset=UTF-8' );
+        }
+        elsif ( $count > 1 ) {
+            INFO("Multiple services");
+            # just delete service entry in subscriber
+            $dbh->do(
+                "DELETE FROM subscribers
+                        WHERE jid LIKE '$jid'
+                        AND servicehost LIKE '$remotehost'
+                        AND challenge LIKE '$challenge'
+                "
+            );
+
+            # set message
+            INFO("Unsubscribed $jid from service $remotehost");
+            print $cgi->header( -status => 200, -type => 'text/html; charset=UTF-8' );
+        }
+        else {
+            INFO("No $jid to unregister");
+            print $cgi->header( -status => 409, -type => 'text/html; charset=UTF-8' );
+        }
+        $count->finish();
+        INFO("Exit routine");
     };
 
     # No arguments provided - print API description

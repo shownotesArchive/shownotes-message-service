@@ -349,6 +349,35 @@ HTTP Status: 409 Conflict
 
 Content-Type: text/html 
 
+### Unregister a user from service by putting a jid and a challenge
+
+* URI: http://example.org/rest/unregister
+* Methode: PUT
+* Auth: BASIC
+* Content-Type: application/json
+
+Data:
+
+```JSON
+{
+    "jid":"anon@example.org",
+    "challenge":"12345example"
+}
+```
+
+### Returns
+
+HTTP Status: 200 OK
+
+Content-Type: text/html
+
+or, if user isn't registered to service 
+
+HTTP Status: 409 Conflict
+
+Content-Type: text/html 
+
+
 ### Change value for showpad notification for a particular user
 
 * URI: http://example.org/rest/showpad
