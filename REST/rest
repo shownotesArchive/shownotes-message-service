@@ -248,6 +248,9 @@ eval {
         my $challenge  = $$register{"challenge"};
         my $remotehost = $cgi->remote_host();
 
+        # generate CRC32 checksum as token
+        my $token = crc32( time . $remotehost . $jid . $challenge );
+
         # do nothing if user isn't registered from this service
         my $sth = $dbh->prepare(
             "SELECT jid,servicehost FROM subscribers 
@@ -441,11 +444,10 @@ eval {
             INFO("Just registered over service");
             # delete service entry and all subscriptions
             
-            #delete subscriptions
+            #delete all subscriptions from $jid
             $dbh->do(
                 "DELETE FROM subscriptions
                         WHERE jid LIKE '$jid'
-                        AND slug LIKE '$podslug'
                 "
             );
 
