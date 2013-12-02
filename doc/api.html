@@ -224,6 +224,24 @@
 <p>or, if token is wrong</p>
 <p>HTTP Status: 409 Conflict</p>
 <p>Content-Type: text/html</p>
+<h3 id="unregister-a-user-from-service-by-putting-a-jid-and-a-challenge">Unregister a user from service by putting a jid and a challenge</h3>
+<ul>
+<li>URI: http://example.org/rest/unregister</li>
+<li>Methode: PUT</li>
+<li>Auth: BASIC</li>
+<li>Content-Type: application/json</li>
+</ul>
+<p>Data:</p>
+<pre class="sourceCode JSON"><code class="sourceCode json">{
+    <span class="dt">&quot;jid&quot;</span>:<span class="st">&quot;anon@example.org&quot;</span>,
+    <span class="dt">&quot;challenge&quot;</span>:<span class="st">&quot;12345example&quot;</span>
+}</code></pre>
+<h3 id="returns-10">Returns</h3>
+<p>HTTP Status: 200 OK</p>
+<p>Content-Type: text/html</p>
+<p>or, if user isn't registered to service</p>
+<p>HTTP Status: 409 Conflict</p>
+<p>Content-Type: text/html</p>
 <h3 id="change-value-for-showpad-notification-for-a-particular-user">Change value for showpad notification for a particular user</h3>
 <ul>
 <li>URI: http://example.org/rest/showpad</li>
@@ -235,7 +253,7 @@
 <pre class="sourceCode JSON"><code class="sourceCode json">{
     <span class="dt">&quot;anon@example.org&quot;</span>:<span class="dv">true</span>
 }</code></pre>
-<h3 id="returns-10">Returns</h3>
+<h3 id="returns-11">Returns</h3>
 <p>HTTP Status: 200 OK</p>
 <p>Content-Type: text/html</p>
 <p>or, if user is not registerd to service</p>
@@ -256,7 +274,7 @@
         <span class="st">&quot;nsfw&quot;</span>
     ]
 }</code></pre>
-<h3 id="returns-11">Returns</h3>
+<h3 id="returns-12">Returns</h3>
 <p>HTTP Status: 200 OK</p>
 <p>Content-Type: application/json</p>
 <p>Data:</p>
@@ -291,7 +309,7 @@
     <span class="dt">&quot;pad&quot;</span>:<span class="st">&quot;einschlafen-42&quot;</span>,
     <span class="dt">&quot;link&quot;</span>:<span class="st">&quot;http://pad.shownot.es/doc/einschlafen-42&quot;</span>,
 }</code></pre>
-<h3 id="returns-12">Returns</h3>
+<h3 id="returns-13">Returns</h3>
 <p>HTTP Status: 200 OK</p>
 <p>Content-Type: text/html</p>
 <p>Data:</p>
