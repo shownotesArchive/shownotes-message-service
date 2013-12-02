@@ -308,7 +308,7 @@ eval {
             $con->PresenceSend( show => 'available' );
 
             # create message
-            my $msg = "Please enter the following token into your profile to complete registration.\nTOKEN: $token\n\nIf you do not register to any service, ignore this request but be aware someone tried to use your account.";
+            my $msg = "Please enter the following token into your profile to complete registration.\nTOKEN: $token\n\nIf you do not register to this service, ignore this request.";
 
             # send a message
             # type = "headline" for penetrant notfication on client-side
@@ -466,6 +466,7 @@ eval {
         }
         else {
             print $cgi->header( -status => 204, -type => 'text/html; charset=UTF-8' );
+            print "{}";
         }
 
         $slugs->finish();
@@ -498,8 +499,7 @@ eval {
         }
         else {
             print $cgi->header( -status => 204, -type => 'text/html; charset=UTF-8' );
-            my $out = "{}";
-            print $out;
+            print "{}";
         }
     };
 
@@ -530,8 +530,7 @@ eval {
         }
         else {
             print $cgi->header( -status => 204, -type => 'text/html; charset=UTF-8' );
-            my $out = "{}";
-            print $out;
+            print "{}";
         }
         $sth->finish();
     };
@@ -575,7 +574,8 @@ eval {
             INFO("GET infos about all subscriptions by jid for $remotehost");
         }
         else {
-            print $cgi->header( -status => 204, -type => 'text/html; charset=UTF-8' );
+            print $cgi->header( -status => 204, -type => 'application/json; charset=UTF-8' );
+            print "{}";
         }
 
         $jids->finish();
@@ -696,7 +696,8 @@ eval {
             INFO("GET infos about all subscriptions on $1 for $remotehost");
         }
         else {
-            print $cgi->header( -status => 204, -type => 'text/html; charset=UTF-8' );
+            print $cgi->header( -status => 204, -type => 'application/json; charset=UTF-8' );
+            print "{}";
         }
     };
 

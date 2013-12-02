@@ -22,7 +22,7 @@ This documentation
 
 HTTP Status: 200 OK
 
-Content-Type: application/JSON
+Content-Type: application/json
 
 Data:
 
@@ -44,7 +44,7 @@ or, if there is no entry
 
 HTTP Status: 204 No Content
 
-Content-Type: application/JSON
+Content-Type: application/json
 
 Data: 
 
@@ -62,7 +62,7 @@ Data:
 
 HTTP Status: 200 OK
 
-Content-Type: application/JSON
+Content-Type: application/json
 
 Data:
 
@@ -81,7 +81,7 @@ or, if there is no subscriber at all
 
 HTTP Status: 204 No Content
 
-Content-Type: text/html
+Content-Type: application/json
 
 Data:
 
@@ -100,7 +100,7 @@ Data:
 
 HTTP Status: 200 OK
 
-Content-Type: application/JSON
+Content-Type: application/json
 
 Data:
 
@@ -114,7 +114,7 @@ or, if no entry
 
 HTTP Status: 204 No Content
 
-Content-Type: text/html
+Content-Type: application/json
 
 Data:
 
@@ -132,7 +132,7 @@ Data:
 
 HTTP Status: 200 OK
 
-Content-Type: application/JSON
+Content-Type: application/json
 
 Data:
 
@@ -159,9 +159,13 @@ or, if there is no entry
 
 HTTP Status: 204 No Content
 
-Content-Type: text/html
+Content-Type: application/json
 
-Data: -
+Data:
+
+```JSON
+{} 
+```
 
 ### Get all subscriptions for a specific jid
 
@@ -173,7 +177,7 @@ Data: -
 
 HTTP Status: 200 OK
 
-Content-Type: application/JSON
+Content-Type: application/json
 
 Data:
 
@@ -201,7 +205,7 @@ or, if there is no entry
 
 HTTP Status: 204 No Content
 
-Content-Type: application/JSON
+Content-Type: application/json
 
 Data:
 
@@ -219,7 +223,7 @@ Data:
 
 HTTP Status: 200 OK
 
-Content-Type: application/JSON
+Content-Type: application/json
 
 Data:
 
@@ -242,9 +246,13 @@ or, if there is no entry
 
 HTTP Status: 204 No Content
 
-Content-Type: text/html
+Content-Type: application/json
 
-Data: -
+Data: 
+
+```JSON
+{} 
+```
 
 ### Get all subscribed jids from a specifc slug
 
@@ -256,7 +264,7 @@ Data: -
 
 HTTP Status: 200 OK
 
-Content-Type: application/JSON
+Content-Type: application/json
 
 Data:
 
@@ -273,9 +281,13 @@ or, if there is no entry
 
 HTTP Status: 204 No Content
 
-Content-Type: text/html
+Content-Type: application/json
 
-Data: -
+Data: 
+
+```JSON
+{} 
+```
 
 ## PUT Resources
 
