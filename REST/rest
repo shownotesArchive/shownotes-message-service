@@ -380,12 +380,14 @@ eval {
         my @rawdata = $cgi->param('PUTDATA');
         my $showpad = JSON->new->utf8(1)->decode(@rawdata);
 
+        INFO(@rawdata);
+
         my $remotehost = $cgi->remote_host();
 
         foreach my $key ( keys %$showpad ) {
             my $jid      = lc $key;             #lowercase
-            my $boolinfo = $$showpad{"$jid"};
-
+            my $boolinfo = $$showpad{"$key"};
+            
             my $sth = $dbh->prepare(
                 "SELECT * FROM subscribers 
                           WHERE jid LIKE '$jid' 
