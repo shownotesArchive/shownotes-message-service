@@ -528,11 +528,12 @@ eval {
 
                 $out = $out . "\"$slug[0]\":{\"subscriptions\":$counter, \"title\":\"$slug[1]\"},";
                 $count->finish();
-            }
+            } 
             chop($out);
             print $cgi->header( -status => 200, -type => 'application/json; charset=UTF-8' );
             print $out. "}";
             INFO("GET all slugs from $remotehost");
+            #INFO("$out");
         }
         else {
             print $cgi->header( -status => 204, -type => 'text/html; charset=UTF-8' );
@@ -566,6 +567,7 @@ eval {
             print $cgi->header( -status => 200, -type => 'application/json; charset=UTF-8' );
             print $out. "}";
             INFO("GET all subscribers to showpad notification for $remotehost");
+            #INFO("$out");
         }
         else {
             print $cgi->header( -status => 204, -type => 'text/html; charset=UTF-8' );
@@ -597,6 +599,8 @@ eval {
             print $cgi->header( -status => 200, -type => 'application/json; charset=UTF-8' );
             print $out;
             INFO("GET infos about $jid about showpad notification for $remotehost");
+            #INFO("$out");
+            
         }
         else {
             print $cgi->header( -status => 204, -type => 'text/html; charset=UTF-8' );
@@ -642,6 +646,7 @@ eval {
             print $cgi->header( -status => 200, -type => 'application/json; charset=UTF-8' );
             print $out. "}";
             INFO("GET infos about all subscriptions by jid for $remotehost");
+            #INFO("$out");
         }
         else {
             print $cgi->header( -status => 204, -type => 'application/json; charset=UTF-8' );
@@ -680,6 +685,7 @@ eval {
             print $cgi->header( -status => 200, -type => 'application/json; charset=UTF-8' );
             print $out . "}";
             INFO("GET infos about all subscriptions on $jid for $remotehost");
+            #INFO("$out");
         }
         else {
             print $cgi->header( -status => 200, -type => 'application/json; charset=UTF-8' );
@@ -728,6 +734,7 @@ eval {
             chop($out);
             print $out. "}";
             INFO("GET infos about all subscriptions by slug for $remotehost");
+            #INFO("$out");
         }
         else {
             #print $cgi->header( -status => 204, -type => 'text/html; charset=UTF-8' );
