@@ -14,11 +14,11 @@ This documentation
 
 ### Get all slugs
 
-#### Returns
-
 * URI: http://example.org/rest/slug
 * Methode: GET
 * Auth: BASIC
+
+#### Returns
 
 HTTP Status: 200 OK
 
