@@ -309,7 +309,7 @@ eval {
             $con->PresenceSend( show => 'available' );
 
             # create message
-            my $msg = "Please enter the following token into your profile to complete registration.\nTOKEN: $token\n\nIf you do not register to this service, ignore this request.";
+            my $msg = "Please enter the following token into your profile to complete the registration process.\nTOKEN: $token\n\nIf you have not registered to any service, please ignore this request.";
 
             # send a message
             # type = "headline" for penetrant notfication on client-side
