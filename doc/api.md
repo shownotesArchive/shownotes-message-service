@@ -44,13 +44,7 @@ or, if there is no entry
 
 HTTP Status: 204 No Content
 
-Content-Type: application/json
-
-Data: 
-
-```JSON
-{} 
-```
+Content-Type: none
 
 ### Get all subscribers of showpad notification
 
@@ -81,13 +75,8 @@ or, if there is no subscriber at all
 
 HTTP Status: 204 No Content
 
-Content-Type: application/json
+Content-Type: none 
 
-Data:
-
-```JSON
-{} 
-```
 
 
 ### Get a specific subscriber for showpad notification by jid
@@ -114,13 +103,7 @@ or, if no entry
 
 HTTP Status: 204 No Content
 
-Content-Type: application/json
-
-Data:
-
-```JSON
-{} 
-```
+Content-Type: none 
 
 ### Get all subscriptions ordered by jid
 
@@ -159,13 +142,8 @@ or, if there is no entry
 
 HTTP Status: 204 No Content
 
-Content-Type: application/json
+Content-Type: none
 
-Data:
-
-```JSON
-{} 
-```
 
 ### Get all subscriptions for a specific jid
 
@@ -205,13 +183,7 @@ or, if there is no entry
 
 HTTP Status: 204 No Content
 
-Content-Type: application/json
-
-Data:
-
-```JSON
-{} 
-```
+Content-Type: none
 
 ### Get all subscribed jids ordered by slugs
 
@@ -246,13 +218,7 @@ or, if there is no entry
 
 HTTP Status: 204 No Content
 
-Content-Type: application/json
-
-Data: 
-
-```JSON
-{} 
-```
+Content-Type: none
 
 ### Get all subscribed jids from a specifc slug
 
@@ -281,13 +247,7 @@ or, if there is no entry
 
 HTTP Status: 204 No Content
 
-Content-Type: application/json
-
-Data: 
-
-```JSON
-{} 
-```
+Content-Type: none
 
 ## PUT Resources
 

@@ -536,8 +536,7 @@ eval {
             #INFO("$out");
         }
         else {
-            print $cgi->header( -status => 204, -type => 'text/html; charset=UTF-8' );
-            print "{}";
+            print $cgi->header( -status => 204);
         }
 
         $slugs->finish();
@@ -570,8 +569,7 @@ eval {
             #INFO("$out");
         }
         else {
-            print $cgi->header( -status => 204, -type => 'text/html; charset=UTF-8' );
-            print "{}";
+            print $cgi->header( -status => 204);
         }
     };
 
@@ -599,12 +597,11 @@ eval {
             print $cgi->header( -status => 200, -type => 'application/json; charset=UTF-8' );
             print $out;
             INFO("GET infos about $jid about showpad notification for $remotehost");
-            #INFO("$out");
+            INFO("$out");
             
         }
         else {
-            print $cgi->header( -status => 204, -type => 'text/html; charset=UTF-8' );
-            print "{}";
+            print $cgi->header( -status => 204);
         }
         $sth->finish();
     };
@@ -649,8 +646,7 @@ eval {
             #INFO("$out");
         }
         else {
-            print $cgi->header( -status => 204, -type => 'application/json; charset=UTF-8' );
-            print "{}";
+            print $cgi->header( -status => 204);
         }
 
         $jids->finish();
@@ -737,9 +733,7 @@ eval {
             #INFO("$out");
         }
         else {
-            #print $cgi->header( -status => 204, -type => 'text/html; charset=UTF-8' );
-            print $cgi->header( -status => 204, -type => 'application/json; charset=UTF-8' );
-            print "{}";
+            print $cgi->header( -status => 204);
         }
 
         $slugs->finish();
@@ -773,8 +767,7 @@ eval {
             INFO("GET infos about all subscriptions on $1 for $remotehost");
         }
         else {
-            print $cgi->header( -status => 204, -type => 'application/json; charset=UTF-8' );
-            print "{}";
+            print $cgi->header( -status => 204);
         }
     };
 
