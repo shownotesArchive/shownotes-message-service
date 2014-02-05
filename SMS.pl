@@ -26,6 +26,7 @@ my $programpath = $cfg->param('directory');
 my $account     = '';
 my $msg         = "";
 my $syn         = 0;
+my $fin         = 0;
 # Log config
 Log::Log4perl->init("$currentpath/logging.config");
 
@@ -136,12 +137,20 @@ sub message {
     elsif ($body eq 'syn') {
         $msg = "SYN-ACK";
         $syn = 1;
-        print "$account found the easteregg!";
+        print "$account found the easteregg!\n";
     }
     elsif ($body eq 'ack' and $syn == 1) {
-        #$msg = "Easter egg connection established\nCongratulations!";
+        $msg = "Easter egg connection established\nCongratulations!";
         $syn = 0;
-        about();
+    }
+    elsif ($body eq 'fin') {
+        $msg = "FIN-ACK";
+        $fin = 1;
+        print "$account found the easteregg!\n";
+    }
+    elsif ($body eq 'ack' and $fin == 1) {
+        $msg = "Easter egg connection disconnected\nByeBye!";
+        $fin = 0;
     }
     else {
         printhelp();
