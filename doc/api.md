@@ -361,7 +361,7 @@ Content-Type: text/html
 
 or, if user is not registerd to service 
 
-HTTP Status: 400 Bad Request 
+HTTP Status: 404 Bad Request 
 
 Content-Type: text/html
 
