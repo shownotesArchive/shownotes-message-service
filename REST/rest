@@ -482,7 +482,7 @@ eval {
         }
         else {
             INFO("No $jid to unregister");
-            print $cgi->header( -status => 409, -type => 'text/html; charset=UTF-8' );
+            print $cgi->header( -status => 404, -type => 'text/html; charset=UTF-8' );
         }
         $count->finish();
         INFO("Exit routine");

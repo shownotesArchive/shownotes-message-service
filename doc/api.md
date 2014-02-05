@@ -333,7 +333,7 @@ Content-Type: text/html
 
 or, if user isn't registered to service 
 
-HTTP Status: 409 Conflict
+HTTP Status: 404 Not found 
 
 Content-Type: text/html 
 
@@ -361,7 +361,7 @@ Content-Type: text/html
 
 or, if user is not registerd to service 
 
-HTTP Status: 404 Bad Request 
+HTTP Status: 404 Not found
 
 Content-Type: text/html
 
@@ -421,7 +421,7 @@ Data:
 ```
 or, if user is not registered 
 
-HTTP Status: 404 Conflict
+HTTP Status: 404 Not found
 
 Content-Type: text/html
 
