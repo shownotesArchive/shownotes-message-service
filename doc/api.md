@@ -421,7 +421,7 @@ Data:
 ```
 or, if user is not registered 
 
-HTTP Status: 409 Conflict
+HTTP Status: 404 Conflict
 
 Content-Type: text/html
 
